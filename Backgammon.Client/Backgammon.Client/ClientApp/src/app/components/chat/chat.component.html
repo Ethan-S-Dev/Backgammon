@@ -1,0 +1,14 @@
+<h2>{{chatWith?.name}}</h2>
+<div class="messages-container">
+    <app-message *ngFor="let message of messages" [text]="message.messageBody" [isUser]="currentUserId===message.senderId" [sentAt]="message.sentAt"></app-message>
+</div>
+<div>
+    <form [formGroup]="messageForm" (ngSubmit)="sendMessage()">
+        <div>
+            <textarea type="text" id="messageBody" placeholder="new message" autocomplete="off" formControlName="messageBody"></textarea>
+        </div>
+        <div class="btn">
+            <button color="primary" type="submit">send</button>
+        </div>
+    </form>
+</div>

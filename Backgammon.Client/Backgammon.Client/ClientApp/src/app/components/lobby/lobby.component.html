@@ -1,0 +1,20 @@
+<div>
+    <button (click)="routeToSettings()">Settings</button>
+    <button (click)="logout()">Logout</button>
+</div>
+<div class="lobby-container">
+    <h1>Hello {{currentUser}}! your id is: {{currentId}}</h1>
+</div>
+<ul>
+    <li *ngFor="let chatter of connected(chatters)" [ngStyle]="{'color':'green'}">
+        <button (click)="openChat(chatter)">{{chatter.name}}</button>
+    </li>
+</ul>
+<ul>
+    <li *ngFor="let chatter of disconnected(chatters)" [ngStyle]="{'color':'red'}">
+        <button (click)="openChat(chatter)"> {{chatter.name}}</button> {{chatter.lastSeen}}
+    </li>
+</ul>
+<div>
+    <app-chat *ngIf="currentChat" [chatWith]="currentChat" [currentUserId]="currentId"></app-chat>
+</div>
