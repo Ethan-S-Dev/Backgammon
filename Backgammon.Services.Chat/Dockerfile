@@ -10,7 +10,7 @@ COPY ["Backgammon.Services.Chat.Domain/Backgammon.Services.Chat.Domain.csproj", 
 COPY ["Backgammon.Services.Chat.Infra.Data/Backgammon.Services.Chat.Infra.Data.csproj", "Backgammon.Services.Chat.Infra.Data/"]
 COPY ["Backgammon.Services.Chat.Infra.Ioc/Backgammon.Services.Chat.Infra.Ioc.csproj", "Backgammon.Services.Chat.Infra.Ioc/"]
 COPY ["Backgammon.Services.Chat.Infra.Secrets/Backgammon.Services.Chat.Infra.Secrets.csproj", "Backgammon.Services.Chat.Infra.Secrets/"]
-RUN dotnet restore "TalkBack.Services.Chat.Api/Backgammon.Services.Chat.Api.csproj"
+RUN dotnet restore "Backgammon.Services.Chat.Api/Backgammon.Services.Chat.Api.csproj"
 COPY . .
 WORKDIR "/src/Backgammon.Services.Chat.Api"
 RUN dotnet build "Backgammon.Services.Chat.Api.csproj" -c Release -o /app/build
