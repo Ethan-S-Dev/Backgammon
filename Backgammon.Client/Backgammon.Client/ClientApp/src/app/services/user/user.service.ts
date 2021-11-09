@@ -59,6 +59,6 @@ export class UserService {
     let token = this.authService.getAccessToken();
     if(!token) return;
     let id = this.jwtHandler.decodeToken(token).sub;
-    this.currentUser = new User(id,name);
+    this.currentUser = {id:id,name:name};
   }
 }

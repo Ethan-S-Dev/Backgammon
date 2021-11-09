@@ -16,9 +16,9 @@ export class AuthService {
   private readonly API = environment.api;
   private readonly ACCESS_TOKEN = 'ACCESS_TOKEN';
   private readonly REFRESH_TOKEN = "REFRESH_TOKEN";
-  private isSignalRInit:boolean = false;
+  private isChatServiceInit:boolean = false;
 
-  constructor(private http: HttpClient,private signalR:ChatService,private router:Router) { }
+  constructor(private http: HttpClient,private chatService:ChatService,private router:Router) { }
 
   login(user: { username: string, password: string }, keepLoggedIn: boolean): Observable<boolean> {
     return this.http.post<Tokens>(`${this.API.identity}/auth/login`, user)
@@ -93,11 +93,7 @@ export class AuthService {
   isLoggedIn(){
     let isTokens = !!this.getAccessToken();
     if(isTokens)
-      if(!this.isSignalRInit)
-      {
-        this.signalR.initConnection(()=>this.accessTokenFactory());
-        this.isSignalRInit = true;
-      }
+        this.initServices();    
       
     return isTokens;
   }
@@ -108,14 +104,12 @@ export class AuthService {
 
   private doLoginUser(tokens: Tokens, keepLoggedIn: boolean) {
     this.storeTokens(tokens,!keepLoggedIn);
-    this.signalR.initConnection(()=>this.accessTokenFactory());
-    this.isSignalRInit = true;
+    this.initServices();
   }
 
   private doLogoutUser() {
     this.removeTokens();
-    this.signalR.closeConnection();
-    this.isSignalRInit = false;
+    this.closeServices();
     this.router.navigate(['/login-register']);
   }
 
@@ -155,5 +149,19 @@ export class AuthService {
     sessionStorage.removeItem(this.ACCESS_TOKEN);
     sessionStorage.removeItem(this.REFRESH_TOKEN);
 
+  }
+
+  private initServices()
+  {
+    if(!this.isChatServiceInit)
+    {
+      this.chatService.initConnection(()=>this.accessTokenFactory());
+      this.isChatServiceInit = true;
+    }
+  }
+
+  private closeServices(){
+    this.chatService.closeConnection();
+    this.isChatServiceInit = false;
   }
 }
