@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { catchError, mapTo, tap } from 'rxjs/operators';
+import { catchError, map, mapTo, tap } from 'rxjs/operators';
 import { Tokens } from 'src/app/models/Tokens';
 import { environment } from 'src/environments/environment';
 import { ChatService } from '../chat/chat.service';
@@ -69,7 +69,8 @@ export class AuthService {
 
   async accessTokenFactory(){
     let result = await this.http.get<any>(`${this.API.identity}/auth/ping`)
-    .pipe(mapTo(true),catchError(error=>{
+    .pipe(mapTo(true),
+      catchError(error=>{
       console.log(error);
       return of(false);
     })).toPromise();

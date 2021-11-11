@@ -12,6 +12,10 @@ import { RegisterComponent } from './components/register/register.component';
 import { LoginRegisterComponent } from './components/login-register/login-register.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { MessageComponent } from './components/message/message.component';
+import { BoardComponent } from './backgammon/components/board/board.component';
+import { StackComponent } from './backgammon/components/stack/stack.component';
+import { PieceComponent } from './backgammon/components/piece/piece.component';
+import { EnumeratePipe } from './pipes/enumerate.pipe';
 
 @NgModule({
   declarations: [
@@ -22,7 +26,11 @@ import { MessageComponent } from './components/message/message.component';
     RegisterComponent,
     LoginRegisterComponent,
     ChatComponent,
-    MessageComponent
+    MessageComponent,
+    BoardComponent,
+    StackComponent,
+    PieceComponent,
+    EnumeratePipe
   ],
   imports: [
     BrowserModule,

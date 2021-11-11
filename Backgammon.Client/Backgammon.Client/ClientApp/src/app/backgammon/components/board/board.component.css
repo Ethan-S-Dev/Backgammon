@@ -1,0 +1,126 @@
+:host {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+}
+
+.main-board {
+    margin-top: 10px;
+    height: 80%;
+    aspect-ratio: 64 / 62;
+    display: grid;
+    grid-template-rows: 10fr 600fr 10fr;
+    grid-template-columns: 10fr 300fr 20fr 300fr 10fr;
+}
+
+.top-line {
+    background-color: rgb(179, 135, 77);
+    grid-row: 1;
+    grid-column-start: 1;
+    grid-column-end: span 5;
+}
+
+.left-line {
+    background-color: rgb(179, 135, 77);
+    grid-row: 2;
+    grid-column: 1;
+}
+
+.right-line {
+    background-color: rgb(179, 135, 77);
+    grid-row: 2;
+    grid-column: 5;
+}
+
+.bottom-line {
+    background-color: rgb(179, 135, 77);
+    grid-row: 3;
+    grid-column-start: 1;
+    grid-column-end: span 5;
+}
+
+.middle-line {
+    grid-column: 3;
+    grid-row: 2;
+    background-color: rgb(179, 135, 77);
+}
+
+.left-box {
+    grid-row: 2;
+    grid-column: 2;
+    background-color: burlywood;
+    display: grid;
+    grid-template-rows: 275fr 50fr 275fr;
+}
+
+.right-box {
+    grid-row: 2;
+    grid-column: 4;
+    background-color: burlywood;
+    display: grid;
+    grid-template-rows: 275fr 50fr 275fr;
+}
+
+.left-top-box {
+    display: flex;
+    grid-row: 1;
+}
+
+.left-mid-box {
+    grid-row: 2;
+}
+
+.left-bottom-box {
+    display: flex;
+    grid-row: 3;
+}
+
+.right-top-box {
+    display: flex;
+    grid-row: 1;
+}
+
+.right-mid-box {
+    grid-row: 2;
+}
+
+.right-bottom-box {
+    display: flex;
+    grid-row: 3;
+}
+
+.tri {
+    width: 20%;
+}
+
+.right-bottom-box>.red-tri {
+    background-image: url(../../assets/tri/tri-red-bottom.svg);
+}
+
+.right-bottom-box>.black-tri {
+    background-image: url(../../assets/tri/tri-black-bottom.svg);
+}
+
+.left-bottom-box>.red-tri {
+    background-image: url(../../assets/tri/tri-red-bottom.svg);
+}
+
+.left-bottom-box>.black-tri {
+    background-image: url(../../assets/tri/tri-black-bottom.svg);
+}
+
+.right-top-box>.red-tri {
+    background-image: url(../../assets/tri/tri-red-top.svg);
+}
+
+.right-top-box>.black-tri {
+    background-image: url(../../assets/tri/tri-black-top.svg);
+}
+
+.left-top-box>.red-tri {
+    background-image: url(../../assets/tri/tri-red-top.svg);
+}
+
+.left-top-box>.black-tri {
+    background-image: url(../../assets/tri/tri-black-top.svg);
+}
