@@ -5,12 +5,56 @@
 }
 
 .main-board {
+    position: relative;
     margin-top: 10px;
     height: 80%;
     aspect-ratio: 64 / 62;
     display: grid;
     grid-template-rows: 10fr 600fr 10fr;
     grid-template-columns: 10fr 300fr 20fr 300fr 10fr;
+}
+
+#moveable-white {
+    position: absolute;
+    z-index: 100;
+    width: 7.03125%;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+#moveable-black {
+    position: absolute;
+    z-index: 5;
+    width: 7.03125%;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.board-graves {
+    position: absolute;
+    width: 7.46268%;
+    height: 31.25%;
+    z-index: 5;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+}
+
+.player-house {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    width: 10%;
+    height: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.grave-stack {
+    width: 100%;
+    height: 50%;
 }
 
 .top-line {
@@ -68,6 +112,10 @@
 
 .left-mid-box {
     grid-row: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5%;
 }
 
 .left-bottom-box {
@@ -82,6 +130,9 @@
 
 .right-mid-box {
     grid-row: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .right-bottom-box {
@@ -94,33 +145,33 @@
 }
 
 .right-bottom-box>.red-tri {
-    background-image: url(../../assets/tri/tri-red-bottom.svg);
+    background-image: url(../../../../assets/tri/tri-red-bottom.svg);
 }
 
 .right-bottom-box>.black-tri {
-    background-image: url(../../assets/tri/tri-black-bottom.svg);
+    background-image: url(../../../../assets/tri/tri-black-bottom.svg);
 }
 
 .left-bottom-box>.red-tri {
-    background-image: url(../../assets/tri/tri-red-bottom.svg);
+    background-image: url(../../../../assets/tri/tri-red-bottom.svg);
 }
 
 .left-bottom-box>.black-tri {
-    background-image: url(../../assets/tri/tri-black-bottom.svg);
+    background-image: url(../../../../assets/tri/tri-black-bottom.svg);
 }
 
 .right-top-box>.red-tri {
-    background-image: url(../../assets/tri/tri-red-top.svg);
+    background-image: url(../../../../assets/tri/tri-red-top.svg);
 }
 
 .right-top-box>.black-tri {
-    background-image: url(../../assets/tri/tri-black-top.svg);
+    background-image: url(../../../../assets/tri/tri-black-top.svg);
 }
 
 .left-top-box>.red-tri {
-    background-image: url(../../assets/tri/tri-red-top.svg);
+    background-image: url(../../../../assets/tri/tri-red-top.svg);
 }
 
 .left-top-box>.black-tri {
-    background-image: url(../../assets/tri/tri-black-top.svg);
+    background-image: url(../../../../assets/tri/tri-black-top.svg);
 }

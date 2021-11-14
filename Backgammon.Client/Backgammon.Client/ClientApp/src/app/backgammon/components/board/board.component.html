@@ -1,27 +1,44 @@
-<div class="main-board">
+<div class="main-board" id="game-board">
+    <app-piece id="moveable-white" [isWhite]="true"></app-piece>
+    <app-piece id="moveable-black" [isWhite]="false"></app-piece>
+    <div class="board-graves">
+        <app-stack id="stack-25" [isBottom]="true" [maxSize]="2" class="grave-stack" [blackPieces]="blackPieces[25]" [whitePieces]="whitePieces[25]" [stackNumber]="25" [isLastMoveable]="moveable[25]"></app-stack>
+        <app-stack id="stack-0" [maxSize]="2" class="grave-stack" [isLastMoveable]="blackPieces[0] > 0 || whitePieces[0] > 0" [blackPieces]="blackPieces[0]" [whitePieces]="whitePieces[0]" [stackNumber]="0" [isLastMoveable]="moveable[0]"></app-stack>
+    </div>
+    <div class="player-house" (drop)="dropOut($event)" (dragover)="allowDropOut($event)"></div>
     <div class="top-line"></div>
     <div class="left-line"></div>
     <div class="left-box">
         <div class="left-top-box">
-            <app-stack *ngFor="let i of left_top" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2==0,'black-tri':i%2!=0}" [stackNumber]="i" (drop)="drop($event,i)" (dragover)="allowDrop($event)" [whitePieces]="whitePieces[i]" [blackPieces]="blackPieces[i]"></app-stack>
+            <app-stack *ngFor="let i of left_top" id="stack-{{i}}" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2!=0,'black-tri':i%2==0}" [stackNumber]="i" (drop)="drop($event,i)" (dragover)="allowDrop($event)" [whitePieces]="whitePieces[i]"
+                [blackPieces]="blackPieces[i]"></app-stack>
         </div>
-        <div class="left-mid-box"></div>
+        <div class="left-mid-box">
+            <app-dice id="dice1" *ngIf="dices" [number]="dices.dice1"></app-dice>
+            <app-dice id="dice2" *ngIf="dices" [number]="dices.dice2"></app-dice>
+        </div>
         <div class="left-bottom-box">
-            <app-stack *ngFor="let i of left_bottom" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2!=0,'black-tri':i%2==0}" [stackNumber]="i" [isBottom]="true" (drop)="drop($event,i)" (dragover)="allowDrop($event)" [whitePieces]="whitePieces[i]"
+            <app-stack *ngFor="let i of left_bottom" id="stack-{{i}}" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2==0,'black-tri':i%2!=0}" [stackNumber]="i" [isBottom]="true" (drop)="drop($event,i)" (dragover)="allowDrop($event)" [whitePieces]="whitePieces[i]"
                 [blackPieces]="blackPieces[i]"></app-stack>
         </div>
     </div>
     <div class="middle-line"></div>
     <div class="right-box">
         <div class="right-top-box">
-            <app-stack *ngFor="let i of right_top" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2==0,'black-tri':i%2!=0}" [stackNumber]="i" (drop)="drop($event,i)" (dragover)="allowDrop($event)" [whitePieces]="whitePieces[i]" [blackPieces]="blackPieces[i]"></app-stack>
+            <app-stack *ngFor="let i of right_top" id="stack-{{i}}" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2!=0,'black-tri':i%2==0}" [stackNumber]="i" (drop)="drop($event,i)" (dragover)="allowDrop($event)" [whitePieces]="whitePieces[i]"
+                [blackPieces]="blackPieces[i]"></app-stack>
         </div>
-        <div class="right-mid-box"></div>
+        <div class="right-mid-box">
+        </div>
         <div class="right-bottom-box">
-            <app-stack *ngFor="let i of right_bottom" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2!=0,'black-tri':i%2==0}" [stackNumber]="i" [isBottom]="true" (drop)="drop($event,i)" (dragover)="allowDrop($event)" [whitePieces]="whitePieces[i]"
+            <app-stack *ngFor="let i of right_bottom" id="stack-{{i}}" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2==0,'black-tri':i%2!=0}" [stackNumber]="i" [isBottom]="true" (drop)="drop($event,i)" (dragover)="allowDrop($event)" [whitePieces]="whitePieces[i]"
                 [blackPieces]="blackPieces[i]"></app-stack>
         </div>
     </div>
     <div class="right-line"></div>
     <div class="bottom-line"></div>
+</div>
+<div class="btns">
+    <button (click)="randomMove()">random</button>
+    <button class="roll-btn" (click)="rollDices()">Roll Dices</button>
 </div>

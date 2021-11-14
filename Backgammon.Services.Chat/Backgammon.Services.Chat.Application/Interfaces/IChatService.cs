@@ -10,7 +10,7 @@ namespace Backgammon.Services.Chat.Application.Interfaces
         Task<Chatter> GetOrAddChatterAsync(Guid chaterId,string username);
         Task<DateTime> GetLastSeen(Guid chatterId);
         Task<Chatter> GetChatterAsync(Guid chatterId);
-        Task ConnectChatterAsync(Guid chater,string connectionId);
+        Task<bool> ConnectChatterAsync(Guid chater,string connectionId);
         Task<bool> DisconnectChatterAsync(Guid chater,string connectionId);
         Task<IEnumerable<Chatter>> GetChattersAsync(Guid exlodedId);
         void CloseAllConnections();

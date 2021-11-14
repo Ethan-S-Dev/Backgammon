@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { GameLogicService } from '../../logic/game-logic.service';
 
 @Component({
   selector: 'app-board',
@@ -6,30 +7,64 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent implements OnInit {
-  left_top = [12,13,14,15,16,17];
-  left_bottom = [11,10,9,8,7,6];
+  left_top = [13, 14, 15, 16, 17, 18];
+  left_bottom = [12, 11, 10, 9, 8, 7];
 
-  right_top = [18,19,20,21,22,23];
-  right_bottom = [5,4,3,2,1,0];
+  right_top = [19, 20, 21, 22, 23, 24];
+  right_bottom = [6, 5, 4, 3, 2, 1];
+  moveable: boolean[] = [];
 
-  whitePieces:number[] = [2,0,6,0,0,0,0,0,0,0,0,15,0,0,0,0,3,0,15,0,0,0,0,0];
-  blackPieces:number[] = [0,0,0,0,0,15,0,3,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,2];
+  blackPieces: number[] = [];
+  whitePieces: number[] = [];
 
-  moveable = [true,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,true,false,true,false,false,false,false,false];
+  dices: { dice1: number, dice2: number } | undefined;
 
-  constructor() { }
+  constructor(private logic: GameLogicService, private cdr: ChangeDetectorRef) {
+
+  }
+
 
   ngOnInit(): void {
+    this.logic.observeBlackPieces.subscribe(p => this.blackPieces = p);
+    this.logic.observeWhitePieces.subscribe(p => this.whitePieces = p);
+    this.logic.observeMoveable.subscribe(m => this.moveable = m);
+    this.logic.observeDices.subscribe(d => this.dices = d);
   }
-  allowDrop(ev:DragEvent){
+  allowDrop(ev: DragEvent) {
     ev.preventDefault();
   }
 
-  drop(ev:DragEvent,toStack:number){
+  async drop(ev: DragEvent, toStack: number) {
     ev.preventDefault();
     let fromStack = ev.dataTransfer?.getData("fromStack");
     let pieceColor = ev.dataTransfer?.getData("color");
     console.log(`Drop ${pieceColor} piece from ${fromStack} to ${toStack}`)
+    if (fromStack && pieceColor) {
+      let from = new Number(fromStack) as number;
+      await this.logic.playerMove(from, toStack, pieceColor);
+    }
   }
 
+  allowDropOut(ev: DragEvent) {
+    ev.preventDefault();
+  }
+
+  async dropOut(ev: DragEvent) {
+    ev.preventDefault();
+    let fromStack = ev.dataTransfer?.getData("fromStack");
+    let pieceColor = ev.dataTransfer?.getData("color");
+    console.log(`Removed ${pieceColor} piece from ${fromStack}`)
+    if (fromStack && pieceColor) {
+      let from = new Number(fromStack) as number;
+      await this.logic.playerRemovePice(from,pieceColor);
+    }
+  }
+
+  async randomMove() {
+    await this.logic.doRandomMove();
+  }
+
+  async rollDices() {
+    await this.logic.rollDices();
+  }
 }

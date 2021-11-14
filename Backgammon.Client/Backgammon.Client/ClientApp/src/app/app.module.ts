@@ -16,6 +16,8 @@ import { BoardComponent } from './backgammon/components/board/board.component';
 import { StackComponent } from './backgammon/components/stack/stack.component';
 import { PieceComponent } from './backgammon/components/piece/piece.component';
 import { EnumeratePipe } from './pipes/enumerate.pipe';
+import { DiceComponent } from './backgammon/components/dice/dice.component';
+import { MaxPipe } from './pipes/max.pipe';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { EnumeratePipe } from './pipes/enumerate.pipe';
     BoardComponent,
     StackComponent,
     PieceComponent,
-    EnumeratePipe
+    EnumeratePipe,
+    DiceComponent,
+    MaxPipe
   ],
   imports: [
     BrowserModule,

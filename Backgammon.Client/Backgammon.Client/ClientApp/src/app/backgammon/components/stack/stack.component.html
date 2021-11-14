@@ -1,12 +1,3 @@
-<div class="stack-one" [ngClass]="{'stack-bottom':isBottom}">
-    <app-piece *ngFor="let i of blackPieces | enumerate:0:6:isBottom" [draggable]="isDraggable(false,i)" [isMoveable]="isDraggable(false,i)" (dragstart)="drag($event,false)" [isWhite]="false"></app-piece>
-    <app-piece *ngFor="let i of whitePieces | enumerate:0:6:isBottom" [draggable]="isDraggable(true,i)" [isMoveable]="isDraggable(true,i)" (dragstart)="drag($event,true)" [isWhite]="true"></app-piece>
-</div>
-<div *ngIf="blackPieces>6||whitePieces>6" class="stack-two" [ngClass]="{'stack-bottom':isBottom}">
-    <app-piece *ngFor="let i of blackPieces | enumerate:6:12:isBottom" [draggable]="isDraggable(false,i)" [isMoveable]="isDraggable(false,i)" (dragstart)="drag($event,false)" [isWhite]="false"></app-piece>
-    <app-piece *ngFor="let i of whitePieces | enumerate:6:12:isBottom" [draggable]="isDraggable(true,i)" [isMoveable]="isDraggable(true,i)" (dragstart)="drag($event,true)" [isWhite]="true"></app-piece>
-</div>
-<div *ngIf="blackPieces>12||whitePieces>12" class="stack-three" [ngClass]="{'stack-bottom':isBottom}">
-    <app-piece *ngFor="let i of blackPieces | enumerate:12:18:isBottom" [draggable]="isDraggable(false,i)" [isMoveable]="isDraggable(false,i)" (dragstart)="drag($event,false)" [isWhite]="false"></app-piece>
-    <app-piece *ngFor="let i of whitePieces | enumerate:12:18:isBottom" [draggable]="isDraggable(true,i)" [isMoveable]="isDraggable(true,i)" (dragstart)="drag($event,true)" [isWhite]="true"></app-piece>
+<div *ngFor="let n of ((whitePieces|max:blackPieces)/maxSize)+1 | enumerate" [ngClass]="{'stack-bottom':isBottom}" [ngStyle]="{'z-index':n+1,'transform':'translate('+n*10+'%, -'+n+'%)'}">
+    <app-piece *ngFor="let i of ((whitePieces|max:blackPieces) | enumerate:n*maxSize:((n+1)*maxSize):isBottom)" [draggable]="isDraggable(i)" [isMoveable]="isDraggable(i)" (dragstart)="drag($event)" [isWhite]="whitePieces>0"></app-piece>
 </div>

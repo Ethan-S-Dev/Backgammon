@@ -6,11 +6,14 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class EnumeratePipe implements PipeTransform {
 
   transform(n: number,from:number|undefined = undefined,to:number|undefined=undefined,reverse:boolean=false): number[] {
-    if(n <= 0)
+    let r_n = Math.floor(n);
+    let r_f = from? Math.floor(from):undefined;
+    let r_t = to? Math.floor(to):undefined;
+    if(r_n <= 0)
       return [];
     if(reverse)
-      return[...Array(n)].map((_,i) => i).slice(from,to).reverse();
-    return [...Array(n)].map((_,i) => i).slice(from,to);
+      return[...Array(r_n)].map((_,i) => i).slice(r_f,r_t).reverse();
+    return [...Array(r_n)].map((_,i) => i).slice(r_f,r_t);
   }
 
 }

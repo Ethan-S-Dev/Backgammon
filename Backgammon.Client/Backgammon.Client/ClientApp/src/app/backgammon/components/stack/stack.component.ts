@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-stack',
@@ -8,6 +8,8 @@ import { Component, Input, OnInit } from '@angular/core';
 export class StackComponent implements OnInit {
 
   @Input() stackNumber:number = 0;
+
+  @Input() maxSize:number = 6;
 
   @Input() isBottom:boolean = false;
 
@@ -23,15 +25,24 @@ export class StackComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  drag(ev:DragEvent,isWhite:boolean){
-    ev.dataTransfer?.setData('fromStack',this.stackNumber.toString());
-    ev.dataTransfer?.setData('color',isWhite?'white':'black');
+  private color(){
+    if(this.whitePieces)
+      return 'white';
+    if(this.blackPieces)
+      return 'black';
+    return undefined;
   }
 
-  isDraggable(isWhite:boolean,n:number){
+  drag(ev:DragEvent){
+    ev.dataTransfer?.setData('fromStack',this.stackNumber.toString());
+    ev.dataTransfer?.setData('color',this.color()??'none');
+  }
 
-      if(isWhite)
-        return n == this.whitePieces-1 && this.isLastMoveable;
-      return n == this.blackPieces-1 && this.isLastMoveable;
+  isDraggable(n:number){
+      return n == (Math.max(this.whitePieces,this.blackPieces)-1) && this.isLastMoveable;
     }
+
+  getTransform(n:number){
+    return `translate(${n*10}%, -${n}}%)`;
+  }
 }
