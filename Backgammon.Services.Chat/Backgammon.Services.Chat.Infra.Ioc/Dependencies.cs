@@ -15,7 +15,7 @@ namespace Backgammon.Services.Chat.Infra.Ioc
 
         public static void AddSecrets(this IServiceCollection services)
         {
-            services.AddScoped<ICredentialsProvider, CredentialsProvider>();
+            services.AddSingleton<ICredentialsProvider, CredentialsProvider>();
         }
 
         public static void AddSecrets(this IServiceCollection services, Action<ICredentialsProvider> signigAction)

@@ -15,9 +15,14 @@ export class StackComponent implements OnInit {
 
   @Input() isLastMoveable:boolean = false;
 
+  @Input() isDroppable:boolean = false;
+
   @Input() whitePieces: number = 0;
 
   @Input() blackPieces: number = 0;
+
+  @Output() dragStarted:EventEmitter<number> = new EventEmitter<number>();
+  @Output() dragEnded:EventEmitter<number> = new EventEmitter<number>();
 
   constructor() { }
 
@@ -34,8 +39,14 @@ export class StackComponent implements OnInit {
   }
 
   drag(ev:DragEvent){
+    //ev.preventDefault();
     ev.dataTransfer?.setData('fromStack',this.stackNumber.toString());
     ev.dataTransfer?.setData('color',this.color()??'none');
+    this.dragStarted.emit(this.stackNumber);
+  }
+
+  dragStop(ev:DragEvent){
+    this.dragEnded.emit(this.stackNumber);
   }
 
   isDraggable(n:number){

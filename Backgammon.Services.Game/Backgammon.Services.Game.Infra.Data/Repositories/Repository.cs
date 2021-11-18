@@ -1,0 +1,51 @@
+﻿using Backgammon.Services.Game.Domain.Interfaces;
+using Backgammon.Services.Game.Domain.Models;
+using Backgammon.Services.Game.Infra.DbModels;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+
+namespace Backgammon.Services.Game.Infra.Repositories
+{
+    public class Repository : IRepository
+    {
+        GameDataContext _dataContext;
+
+        public Repository(GameDataContext dataContext)
+        {
+            _dataContext = dataContext;
+        }
+
+        public bool IsExist(string playerId) // returns false if it is a new player
+        {
+            var player = _dataContext.Players.FirstOrDefault(p => p.ID == playerId);
+            if (player is default(PlayerDto))
+                return false;
+            else
+                return true;
+        }
+
+        public Player GetPlayerFromRepo(string Id, string connectionId) //get player from db 
+        {
+            PlayerDto pDto = _dataContext.Players.Include(p => p.GamesHistory).FirstOrDefault(p => p.ID == Id);
+            Player player = new Player(pDto.ID, pDto.UserName, connectionId, pDto.GamesHistory);
+            return player;
+        }
+
+        public void AddNewPlayer(string Id, string userName)
+        {
+            _dataContext.Players.Add(new PlayerDto(Id, userName));
+        }
+
+        public void UpdatePlayersResutlsAfterGame(GameResultToHistory winnerResult, GameResultToHistory looserResult) //מעדכן את שתי חברי המשחק בתוצאות 
+        {
+            PlayerDto winnerPlayer = _dataContext.Players.Include(p => p.GamesHistory).FirstOrDefault(p => p.ID == winnerResult.PlayerDtoID);
+            winnerPlayer.GamesHistory.Add(winnerResult);
+            PlayerDto losserPlayer = _dataContext.Players.Include(p => p.GamesHistory).FirstOrDefault(p => p.ID == looserResult.PlayerDtoID);
+            losserPlayer.GamesHistory.Add(looserResult);
+        }
+
+        //public GameResultsDto ConvertGameResultToDto(GameResultToHistory game)=> new GameResultsDto() { Player = GetPlayerByID(game.PlayerID), ID = game.ID, HasWon = game.HasWon, ComponentsID = game.ComponentsID };
+        //public GameResultToHistory ConvertGameResultFromDto(GameResultsDto game) => new GameResultToHistory() { PlayerID = GetPlayerByID(game.Player.ID).ID, ID = game.ID, HasWon = game.HasWon, ComponentsID = game.ComponentsID };
+
+    }
+}

@@ -1,13 +1,31 @@
 :host {
-    display: flex;
-    justify-content: center;
-    height: 100%;
+    display: grid;
+    width: 100%;
+    grid-template-columns: 7fr 3fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.player-box {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+}
+
+.enemy-box {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+}
+
+.board-container {
+    grid-column: 1;
+    grid-row-start: 1;
+    grid-row-end: span 2;
 }
 
 .main-board {
     position: relative;
     margin-top: 10px;
-    height: 80%;
     aspect-ratio: 64 / 62;
     display: grid;
     grid-template-rows: 10fr 600fr 10fr;

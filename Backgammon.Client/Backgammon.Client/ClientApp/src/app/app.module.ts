@@ -18,6 +18,7 @@ import { PieceComponent } from './backgammon/components/piece/piece.component';
 import { EnumeratePipe } from './pipes/enumerate.pipe';
 import { DiceComponent } from './backgammon/components/dice/dice.component';
 import { MaxPipe } from './pipes/max.pipe';
+import { StackPipe } from './pipes/stack.pipe';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { MaxPipe } from './pipes/max.pipe';
     PieceComponent,
     EnumeratePipe,
     DiceComponent,
-    MaxPipe
+    MaxPipe,
+    StackPipe
   ],
   imports: [
     BrowserModule,
