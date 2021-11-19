@@ -11,7 +11,7 @@ namespace Backgammon.Services.Game.Domain.Models
         public string FirstPlayerConnection { get; set; }
         public string SecondPlayerID { get; set; }
         public string SecondPlayerConnection { get; set; }
-        public Dictionary<Colors, int> OutsidePlayers { get; set; }
+        public Dictionary<Colors, int> OutsidePlayers { get; set; } = new Dictionary<Colors, int>();
 
         //Current Status Propperties for Confirmation
         public string CurrentPlayersTurn { get; set; }
@@ -23,7 +23,34 @@ namespace Backgammon.Services.Game.Domain.Models
         public GamePlay(string firstId, string secondId, string gameId, string FirstConnection, string SecondConnection)
         {
             GameId = gameId;
-            Cells = new GameCell[26];//מערך של מיקומי השחקים כך ש 0 ו 25 מציינים את האכולים של כל שחקן בהתאם
+            Cells = new GameCell[] {
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 2, Color = Colors.Player1},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 5, Color = Colors.Player2},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 3, Color = Colors.Player2},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 5, Color = Colors.Player1},
+                new GameCell() { NumOfPieces = 5, Color = Colors.Player2},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 3, Color = Colors.Player1},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 5, Color = Colors.Player1},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 2, Color = Colors.Player2},
+                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+            };
             FirstPlayerID = firstId;
             SecondPlayerID = secondId;
             OutsidePlayers.Add(Colors.Player1, 0);
@@ -222,7 +249,7 @@ namespace Backgammon.Services.Game.Domain.Models
                 for (int i = 1; i < 25; i++)
                 {
                     if (Cells[i].Color == PlayersColor)//אם בתא הזה יש חייל של אותו שחקן תבדוק אם הוא יכול לזוז
-                        if (CheckAvailbilty(new PlayersMove() { CellNumber = i, PlayersColor = PlayersColor, NumOfSteps = num }) > 0)
+                        if (CheckAvailbilty(new PlayersMove() { CellNumber = i, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
                         {
                             return true;
                         }

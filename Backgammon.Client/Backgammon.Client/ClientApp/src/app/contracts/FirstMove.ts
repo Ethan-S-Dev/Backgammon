@@ -1,8 +1,9 @@
 import { TwoNums } from "../models/TwoNums";
 
 export interface FirstMove{
-    PlayerOne:string,
-    PlayerTwo:string,
+    gameId:string,
+    playerOne:string,
+    playerTwo:string,
     whosFirstCubes:TwoNums,
     playingCubes:TwoNums
 }

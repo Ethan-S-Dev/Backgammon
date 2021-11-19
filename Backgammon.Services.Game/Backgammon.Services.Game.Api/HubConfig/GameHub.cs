@@ -100,6 +100,7 @@ namespace Backgammon.Services.Game.Api.HubConfig
                 GamePlay newGame = _boardManager.OnlineGames[gameID];
                 _playerService.StartGame(newGame);
                 StartGameModel startGameModel = _boardManager.GettingStartModel(newGame.FirstPlayerID, newGame.SecondPlayerID);
+                startGameModel.GameId = gameID;
                 newGame.InitGamePlay(startGameModel);//InitThePlayersTurnAndNumOfMovesLeft
                 await Clients.Client(senderConnectionString).SendAsync("StartGame", startGameModel);
                 await Clients.Client(Context.ConnectionId).SendAsync("StartGame", startGameModel);
@@ -166,15 +167,16 @@ namespace Backgammon.Services.Game.Api.HubConfig
             {
                 if (game.IsThereMoreMovements(playersColor))
                 {
-                    await Clients.Client(OtherPlayerConnection).SendAsync("OpponentMove", move);
-                    //send approval for the sender
+
+                   await Clients.Client(OtherPlayerConnection).SendAsync("OpponentMove", new Move { GameId = gameID, NumOfSteps = -move.NumOfSteps, StackNumber = 25 - move.StackNumber });
+
                 }
                 else
                 {
                     var newNums = _boardManager.RollCubes();
                     game.switchPlayersTurnAndRollCubes(Context.User.getPlayerId(), newNums);
                     await Clients.Client(CurrentPlayerConnection).SendAsync("TurnIsOver", newNums);
-                    await Clients.Client(OtherPlayerConnection).SendAsync("LastMoveOfOpponent", new LastMoveModel() { LastMove = playersMove, newNums = newNums });
+                    await Clients.Client(OtherPlayerConnection).SendAsync("LastMoveOfOpponent", new LastMove() { OpponentMove = new Move { GameId = gameID, NumOfSteps = -playersMove.NumOfSteps, StackNumber = 25 - playersMove.CellNumber }, YourDiecs = newNums });
                 }
             }
 

@@ -26,12 +26,15 @@ namespace Backgammon.Services.Game.Infra
         {
             TwoNums twoNums = new();
 
-            using (HttpResponseMessage httpResponse = httpClient.GetAsync(fullPath).Result)
+            using (HttpResponseMessage httpResponse = await httpClient.GetAsync(fullPath))
             {
                 if (httpResponse.IsSuccessStatusCode)
                 {
-                    string s = httpResponse.Content.ReadAsStringAsync().Result;
-                    return s.getRandomNumber();
+                    string s = await httpResponse.Content.ReadAsStringAsync();
+                    var num = s.getRandomNumber();
+                    if(num == 0)
+                        return rnd.Next(minNumber, maxNumber + 1);
+                    return num;
                 }
                 else
                     return rnd.Next(minNumber, maxNumber + 1);

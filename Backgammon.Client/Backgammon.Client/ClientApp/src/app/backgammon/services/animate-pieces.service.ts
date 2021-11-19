@@ -56,8 +56,8 @@ export class AnimatePiecesService {
     if(i == 25)
       return true;
     if(i<13)
-      return true;
-    return false;
+      return false;
+    return true;
   }
 
   private animate(pice:HTMLElement,moveFrom:Point,moveTo:Point,time:number){

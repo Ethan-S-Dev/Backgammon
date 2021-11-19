@@ -12,7 +12,7 @@
         <div class="left-line"></div>
         <div class="left-box">
             <div class="left-top-box">
-                <app-stack *ngFor="let i of left_top" id="stack-{{i}}" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2!=0,'black-tri':i%2==0}" [stackNumber]="i" (drop)="drop($event,i)" (dragover)="allowDrop($event,i)" [whitePieces]="whitePieces[i]"
+                <app-stack *ngFor="let i of left_top" id="stack-{{i}}" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2==0,'black-tri':i%2!=0}" [stackNumber]="i" (drop)="drop($event,i)" (dragover)="allowDrop($event,i)" [whitePieces]="whitePieces[i]"
                     [blackPieces]="blackPieces[i]" [isDroppable]="moveableTo[i]" (dragStarted)="dragStarted($event)" (dragEnded)="dragEnded($event)"></app-stack>
             </div>
             <div class="left-mid-box">
@@ -27,7 +27,7 @@
         <div class="middle-line"></div>
         <div class="right-box">
             <div class="right-top-box">
-                <app-stack *ngFor="let i of right_top" id="stack-{{i}}" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2!=0,'black-tri':i%2==0}" [stackNumber]="i" (drop)="drop($event,i)" (dragover)="allowDrop($event,i)" [whitePieces]="whitePieces[i]"
+                <app-stack *ngFor="let i of right_top" id="stack-{{i}}" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2==0,'black-tri':i%2!=0}" [stackNumber]="i" (drop)="drop($event,i)" (dragover)="allowDrop($event,i)" [whitePieces]="whitePieces[i]"
                     [blackPieces]="blackPieces[i]" [isDroppable]="moveableTo[i]" (dragStarted)="dragStarted($event)" (dragEnded)="dragEnded($event)"></app-stack>
             </div>
             <div class="right-mid-box">

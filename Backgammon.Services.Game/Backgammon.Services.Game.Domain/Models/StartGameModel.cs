@@ -8,6 +8,7 @@ namespace Backgammon.Services.Game.Domain.Models
 {
     public class StartGameModel
     {
+        public string GameId { get; set; }
         public string PlayerOne { get; set; }
         public string PlayerTwo { get; set; }
         public TwoNums WhosFirstCubes { get; set; }

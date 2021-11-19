@@ -13,7 +13,7 @@ namespace Backgammon.Services.Game.Domain.Models
         {
             if (nums.IsDouble())
             {
-                NumbersToPlay = new NumToPlay[4];
+                NumbersToPlay = new[] { new NumToPlay(), new NumToPlay(), new NumToPlay(), new NumToPlay() };
                 foreach (var num in NumbersToPlay)
                 {
                     num.Number = nums.FirstCube;
@@ -22,7 +22,7 @@ namespace Backgammon.Services.Game.Domain.Models
             }
             else
             {
-                NumbersToPlay = new NumToPlay[2];
+                NumbersToPlay = new[] {new NumToPlay(), new NumToPlay() };
                 NumbersToPlay[0].Number = nums.FirstCube;
                 NumbersToPlay[1].Number = nums.SecondCube;
                 NumbersToPlay[0].IsPlayed = false;
@@ -51,13 +51,10 @@ namespace Backgammon.Services.Game.Domain.Models
         }
         public IEnumerable<int> GetAvalableNumbers()
         {
-            foreach (var number in NumbersToPlay)
-            {
-                if (number.IsPlayed == false)
-                    yield return number.Number;
-            }
+            return NumbersToPlay
+                .Where(n => !n.IsPlayed)
+                .Select(n => n.Number);
         }
-
         public bool IsNumAvalble(int number)
         {
             foreach (var num in NumbersToPlay)
@@ -67,7 +64,6 @@ namespace Backgammon.Services.Game.Domain.Models
             }
             return false;
         }
-
     }
 
     public class NumToPlay

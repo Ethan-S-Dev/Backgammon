@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Request } from 'src/app/models/Request';
 import { FirstMove } from 'src/app/contracts/FirstMove';
 import { Chatter } from 'src/app/models/Chatter';
-import { Game } from 'src/app/models/Game';
+import { StartGame } from 'src/app/models/StartGame';
 import { Player } from 'src/app/models/Player';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { ChatService } from 'src/app/services/chat/chat.service';
@@ -22,7 +22,7 @@ export class LobbyComponent implements OnInit {
   currentId?:string;
   chatters:Chatter[] = [];
   isPlaying:boolean = false;
-  game:Game|undefined;
+  game:StartGame|undefined;
   connected:(all:Chatter[])=>Chatter[] = (all)=>all.filter(c=>c.isConnected);
   disconnected:(all:Chatter[])=>Chatter[] = (all)=>all.filter(c=>!c.isConnected);
 
@@ -63,8 +63,18 @@ export class LobbyComponent implements OnInit {
       if(!firstMove)
         return;
       this.isPlaying = true;
-      // init game 
-      this.game = {isStarting:false,playerColor:'white'};
+      let isPlayerOne = firstMove.playerOne == this.currentId;
+
+      if(isPlayerOne)
+        if(firstMove.whosFirstCubes.firstCube > firstMove.whosFirstCubes.secondCube)
+          this.game = {isStarting:true,playerColor:'white',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId};
+        else
+          this.game = {isStarting:false,playerColor:'white',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId};
+      else
+        if(firstMove.whosFirstCubes.secondCube > firstMove.whosFirstCubes.firstCube)
+          this.game = {isStarting:true,playerColor:'black',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId};
+        else
+          this.game = {isStarting:false,playerColor:'black',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId};
     });
   }
 
