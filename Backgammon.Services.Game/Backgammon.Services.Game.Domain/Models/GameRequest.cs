@@ -7,6 +7,7 @@ namespace Backgammon.Services.Game.Domain.Models
 {
     public class GameRequest
     {
+        public string RequestId { get; set; }
         public string SenderID { get; set; }
         public string RecieverID { get; set; }
         public string SenderConnection { get; set; }

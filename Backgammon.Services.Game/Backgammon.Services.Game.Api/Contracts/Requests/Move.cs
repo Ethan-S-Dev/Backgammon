@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Backgammon.Services.Game.Domain.Models
+namespace Backgammon.Services.Game.Api.Contracts.Requests
 {
-    public class GameResult
+    public class Move
     {
         public string GameId { get; set; }
-        public string WinnerId { get; set; }
-        public string LosserId { get; set; }
+        public int StackNumber { get; set; }
+        public int NumOfSteps { get; set; }
     }
 }

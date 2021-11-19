@@ -19,9 +19,37 @@
 }
 
 .user-list {
-    background-color: cadetblue;
+    background-color: rgba(199, 210, 211, 0.514);
     grid-column: 1;
     grid-row: 2;
+    box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.user-list>ul {
+    list-style: none;
+    padding: 0;
+}
+
+.user {
+    display: flex;
+    justify-content: space-between;
+    border-radius: 3px;
+    margin: 2px;
+    box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.3);
+    padding-left: 2px;
+}
+
+.user>div {
+    display: flex;
+    font-size: 12;
+}
+
+.offline-user {
+    background-color: rgba(139, 0, 0, 0.3);
+}
+
+.online-user {
+    background-color: rgba(0, 100, 0, 0.3);
 }
 
 .game-container {
@@ -39,7 +67,8 @@
 }
 
 .chat-container {
-    background-color: brown;
+    background-color: rgba(200, 175, 175, 0.3);
+    box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.3);
     grid-column: 3;
     grid-row: 2;
 }

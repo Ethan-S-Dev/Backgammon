@@ -17,7 +17,7 @@ namespace Backgammon.Services.Game.Infra.Repositories
 
         public bool IsExist(string playerId) // returns false if it is a new player
         {
-            var player = _dataContext.Players.FirstOrDefault(p => p.ID == playerId);
+            var player = _dataContext.Players.Find(playerId);
             if (player is default(PlayerDto))
                 return false;
             else
@@ -26,7 +26,8 @@ namespace Backgammon.Services.Game.Infra.Repositories
 
         public Player GetPlayerFromRepo(string Id, string connectionId) //get player from db 
         {
-            PlayerDto pDto = _dataContext.Players.Include(p => p.GamesHistory).FirstOrDefault(p => p.ID == Id);
+            PlayerDto pDto = _dataContext.Players.Find(Id);
+            _dataContext.Entry(pDto).Collection(p => p.GamesHistory);
             Player player = new Player(pDto.ID, pDto.UserName, connectionId, pDto.GamesHistory);
             return player;
         }
@@ -38,9 +39,12 @@ namespace Backgammon.Services.Game.Infra.Repositories
 
         public void UpdatePlayersResutlsAfterGame(GameResultToHistory winnerResult, GameResultToHistory looserResult) //מעדכן את שתי חברי המשחק בתוצאות 
         {
-            PlayerDto winnerPlayer = _dataContext.Players.Include(p => p.GamesHistory).FirstOrDefault(p => p.ID == winnerResult.PlayerDtoID);
+            PlayerDto winnerPlayer = _dataContext.Players.Find(winnerResult.PlayerDtoID);
+            _dataContext.Entry(winnerPlayer).Collection(p => p.GamesHistory);
             winnerPlayer.GamesHistory.Add(winnerResult);
-            PlayerDto losserPlayer = _dataContext.Players.Include(p => p.GamesHistory).FirstOrDefault(p => p.ID == looserResult.PlayerDtoID);
+
+            PlayerDto losserPlayer = _dataContext.Players.Find(winnerPlayer);
+            _dataContext.Entry(losserPlayer).Collection(p => p.GamesHistory);
             losserPlayer.GamesHistory.Add(looserResult);
         }
 

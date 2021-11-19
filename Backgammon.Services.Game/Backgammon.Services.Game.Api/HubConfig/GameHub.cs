@@ -1,13 +1,18 @@
-﻿using Backgammon.Services.Game.Api.Extantions;
+﻿using Backgammon.Services.Game.Api.Contracts.Dtos;
+using Backgammon.Services.Game.Api.Contracts.Requests;
+using Backgammon.Services.Game.Api.Contracts.Response;
+using Backgammon.Services.Game.Api.Extantions;
 using Backgammon.Services.Game.App.Interfaces;
 using Backgammon.Services.Game.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Backgammon.Services.Game.Api.HubConfig
 {
-
+    [Authorize]
     public class GameHub : Hub
     {
         IBoardManager _boardManager;
@@ -23,23 +28,36 @@ namespace Backgammon.Services.Game.Api.HubConfig
         {
             string PlayerID = Context.User.getPlayerId();
             string PlayerName = Context.User.FindFirst(c => c.Type == "name").Value;
-            if (_playerService.ConnectUser(PlayerID, PlayerName, Context.ConnectionId))
+            if(_playerService.ConnectUser(PlayerID, PlayerName, Context.ConnectionId))
             {
-                await Clients.Clients(_playerService.getAllOnlinePlayersConnectinosExceptThatID(Context.User.getPlayerId())).SendAsync("NewPlayerJoind", _playerService.Players[PlayerID]);
-                await Clients.Caller.SendAsync("Connected", _playerService.Players);
+                var player = _playerService.Players[PlayerID];
+                await Clients.Users(_playerService.GetAllConnectedUserIds(Context.User.getPlayerId()))
+                    .SendAsync("NewPlayerJoined", new PlayerDto
+                    {
+                        Id = player.ID,
+                        Name = player.UserName,
+                        InGame = player.InGame
+                    });
             }
+            await Clients.Caller.SendAsync("Connected", _playerService.Players.Values
+                    .Select(p => new PlayerDto
+                    {
+                        Id = p.ID,
+                        InGame = p.InGame,
+                        Name = p.UserName
+                    }).ToList());
+            
         }
 
         public async override Task OnDisconnectedAsync(Exception exception)
         {
-            Console.Write(exception);
             string playerID = Context.UserIdentifier;
             if (_playerService.IfInGameGetGameID(playerID, out string gameID))//if he was in game
             {
                 if (_boardManager.IsConnectionExistsInGame(gameID, Context.ConnectionId))
                 {
                     string otherPlayerID = _boardManager.OnlineGames[gameID].GetOthersPlayerConnection(playerID);
-                    await Clients.Client(otherPlayerID).SendAsync("HomePage", "Player disconnected");
+                    await Clients.Client(otherPlayerID).SendAsync("GameError", GameErrors.OponentDisconnected);
                 }
             }
 
@@ -47,33 +65,33 @@ namespace Backgammon.Services.Game.Api.HubConfig
                 await Clients.All.SendAsync("PlayerDisconnected", playerID);
         }
 
-        public async Task sendGameRequest(string reciverID)
+        public async Task SendGameRequest(string reciverID)
         {
             if (!_playerService.IsAvalable(Context.UserIdentifier))
             {
-                await Clients.Caller.SendAsync("HomePage", "You are alredy in a game");
+                await Clients.Caller.SendAsync("GameError", GameErrors.YouAreInGame);
+                return;
             }
             if (!_playerService.IsAvalable(reciverID))//checking if not availble
             {
-                await Clients.Caller.SendAsync("HomePage", "Player is not availble");
+                await Clients.Caller.SendAsync("GameError", GameErrors.OpponentInGame);
                 return;
             }
-            _playerService.Players.TryGetValue(reciverID, out Player Reciver);
             string senderID = Context.User.getPlayerId();
-            _boardManager.GameRequests.Add(reciverID, new GameRequest() { SenderID = senderID, RecieverID = reciverID, SenderConnection = Context.ConnectionId });
-            await Clients.Clients(Reciver.Connections).SendAsync("GameRequest", _playerService.Players[senderID].UserName);
-            return;
+            var gameRequest = new Domain.Models.GameRequest() { RequestId = Guid.NewGuid().ToString(), SenderID = senderID, RecieverID = reciverID, SenderConnection = Context.ConnectionId };
+            _boardManager.GameRequests.Add(gameRequest.RequestId, gameRequest);
+            await Clients.Users(reciverID).SendAsync("GameRequest", new Contracts.Requests.GameRequest { SenderId = senderID,RequestId = gameRequest.RequestId });
         }
 
-        public async Task gameRequestApproved(bool IsAccepted)//Try To Start the game and to send the Players The StartGameModel 
+        public async Task GameRequestApproved(RequestResponse response)//Try To Start the game and to send the Players The StartGameModel 
         {
-            string receiverID = Context.User.getPlayerId();
-            GameRequest gameRequest = _boardManager.GameRequests[receiverID];
+            string receiverId = Context.User.getPlayerId();
+            Domain.Models.GameRequest gameRequest = _boardManager.GameRequests[response.RequestId];
             string senderConnectionString = gameRequest.SenderConnection;
             string reciverConnectionString = Context.ConnectionId;
-            if (!IsAccepted)
+            if (!response.IsAccepted)
             {
-                await Clients.Client(senderConnectionString).SendAsync("RequestDenied", _playerService.Players[receiverID].UserName);
+                await Clients.Client(senderConnectionString).SendAsync("RequestDenied", receiverId);
                 return;
             }
             if (_playerService.IsAvalable(gameRequest.SenderID)) // if true starts a game
@@ -89,19 +107,16 @@ namespace Backgammon.Services.Game.Api.HubConfig
             }
             else
             {
-                await Clients.Client(Context.ConnectionId).SendAsync("ErrorPage", "Player is no more available");
+                await Clients.Client(Context.ConnectionId).SendAsync("GameError", GameErrors.SenderUnavilable);
                 return;
             }
         }
 
-        public async Task WaitingForAMove(PlayersMove playersMove, string gameID)
+        public async Task SendMove(Move move)
         {
-            bool HasWon = false;
+            Colors playersColor;
+            var gameID = move.GameId;
             GamePlay game = _boardManager.OnlineGames[gameID];
-            Colors playersColor = new Colors();
-            string CurrentPlayerConnection = Context.ConnectionId;
-            string OtherPlayerConnection = game.GetOthersPlayerConnection(Context.UserIdentifier);
-
             if (Context.User.getPlayerId() != game.CurrentPlayersTurn)//אם הוא לא שלח בתורו
                 return;
 
@@ -110,66 +125,65 @@ namespace Backgammon.Services.Game.Api.HubConfig
             else
                 playersColor = Colors.Player2;
 
+            var playersMove = new PlayersMove
+            {
+                CellNumber = move.StackNumber,
+                NumOfSteps = move.NumOfSteps,
+                PlayersColor = playersColor
+            };
+
+            string CurrentPlayerConnection = Context.ConnectionId;
+            string OtherPlayerConnection = game.GetOthersPlayerConnection(Context.UserIdentifier);
+
             int CheckAvalblility = game.CheckAvailbilty(playersMove);//MoveStatus
 
             if (CheckAvalblility == -1)//checks All The Options
             {
-                await Clients.Client(CurrentPlayerConnection).SendAsync("FuckOfYouCheater", "You Sick Fuck");//Sends the id of the cheating player
-                await Clients.Client(OtherPlayerConnection).SendAsync("FuckOfYouCheater", "Your Oppenent Is Dumb");
+                await Clients.Client(CurrentPlayerConnection).SendAsync("GameError", GameErrors.IlligelMove);//Sends the id of the cheating player
                 return;
             }
-            else
-            {
-                HasWon = game.MoveTrueIfWins(playersMove, CheckAvalblility);//makes all the moves and The Board changes
-                if (HasWon)
-                {
-                    string LossersID;
 
-                    if (Context.User.getPlayerId() == game.FirstPlayerID)
-                        LossersID = game.SecondPlayerID;
-                    else
-                        LossersID = game.FirstPlayerID;
-                    await FinishGame(Context.User.getPlayerId(), LossersID, game.GameId);//storing the game information and ends the game
-                    return;
+            var HasWon = game.MoveTrueIfWins(playersMove, CheckAvalblility);//makes all the moves and The Board changes
+            if (HasWon)
+            {
+                string LossersID;
+
+                if (Context.User.getPlayerId() == game.FirstPlayerID)
+                    LossersID = game.SecondPlayerID;
+                else
+                    LossersID = game.FirstPlayerID;
+                await FinishGame(Context.User.getPlayerId(), LossersID, game.GameId);//storing the game information and ends the game
+                return;
+            }
+            if (!game.CurrentPlayes.HasMoreNumbers())
+            {
+                var newNums = _boardManager.RollCubes();
+                game.switchPlayersTurnAndRollCubes(Context.User.getPlayerId(), newNums);
+                await Clients.Client(CurrentPlayerConnection).SendAsync("TurnIsOver", newNums);
+                await Clients.Client(OtherPlayerConnection).SendAsync("LastMoveOfOpponent", new LastMove() { OpponentMove = move, YourDiecs = newNums });
+            }
+            else //If he didnt used all his Cubes
+            {
+                if (game.IsThereMoreMovements(playersColor))
+                {
+                    await Clients.Client(OtherPlayerConnection).SendAsync("OpponentMove", move);
+                    //send approval for the sender
                 }
-                if (!game.CurrentPlayes.HasMoreNumbers())
+                else
                 {
                     var newNums = _boardManager.RollCubes();
                     game.switchPlayersTurnAndRollCubes(Context.User.getPlayerId(), newNums);
                     await Clients.Client(CurrentPlayerConnection).SendAsync("TurnIsOver", newNums);
                     await Clients.Client(OtherPlayerConnection).SendAsync("LastMoveOfOpponent", new LastMoveModel() { LastMove = playersMove, newNums = newNums });
                 }
-                else //If he didnt used all his Cubes
-                {
-                    if (game.IsThereMoreMovements(playersColor))
-                    {
-                        await Clients.Client(OtherPlayerConnection).SendAsync("OpponentMadeAMove", playersMove);
-                        //send approval for the sender
-                    }
-                    else
-                    {
-                        var newNums = _boardManager.RollCubes();
-                        game.switchPlayersTurnAndRollCubes(Context.User.getPlayerId(), newNums);
-                        await Clients.Client(CurrentPlayerConnection).SendAsync("TurnIsOver", newNums);
-                        await Clients.Client(OtherPlayerConnection).SendAsync("LastMoveOfOpponent", new LastMoveModel() { LastMove = playersMove, newNums = newNums });
-                    }
-                }
-
-
-
             }
-
-
-
-
-
 
         }
 
         public async Task FinishGame(string WinnerID, string LosserID, string GameID)
         {
             GamePlay game = _boardManager.OnlineGames[GameID];
-            GameResult gameResult = new GameResult() { WinnerID = WinnerID, LosserID = LosserID };
+            GameResult gameResult = new GameResult() { WinnerId = WinnerID, LosserId = LosserID ,GameId = GameID };
 
             _playerService.FinishGame(gameResult);//מעדכנת את 
             _boardManager.FinishGame(GameID);
@@ -184,6 +198,5 @@ namespace Backgammon.Services.Game.Api.HubConfig
             await Clients.Caller.SendAsync("getPlayerStats", playerStats);
             return;
         }
-
     }
 }

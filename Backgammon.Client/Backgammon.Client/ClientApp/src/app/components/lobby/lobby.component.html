@@ -6,18 +6,20 @@
     </div>
     <div class="user-list">
         <ul>
-            <li *ngFor="let chatter of connected(chatters)" [ngStyle]="{'color':'green'}">
-                <button (click)="openChat(chatter)">{{chatter.name}}</button>
+            <li *ngFor="let chatter of connected(chatters)" class="online-user user" [ngStyle]="{'color':'green'}">
+                {{chatter.name}}
+                <div><button (click)="openChat(chatter)">Chat</button><button (click)="inviteToGame(chatter.id)">Invite</button></div>
             </li>
         </ul>
         <ul>
-            <li *ngFor="let chatter of disconnected(chatters)" [ngStyle]="{'color':'red'}">
-                <button (click)="openChat(chatter)"> {{chatter.name}}</button> {{chatter.lastSeen | date:'H:mm'}}
+            <li *ngFor="let chatter of disconnected(chatters)" class="offline-user user" [ngStyle]="{'color':'red'}">
+                {{chatter.name}} ,last seen: {{chatter.lastSeen | date:'H:mm'}}
+                <div><button (click)="openChat(chatter)">Chat</button></div>
             </li>
         </ul>
     </div>
     <div class="game-container">
-        <app-board></app-board>
+        <app-board *ngIf="isPlaying" [game]="game"></app-board>
     </div>
     <div class="chat-container">
         <app-chat *ngIf="currentChat" [chatWith]="currentChat" [currentUserId]="currentId"></app-chat>

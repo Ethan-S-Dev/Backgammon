@@ -6,13 +6,13 @@ namespace Backgammon.Services.Game.App.Interfaces
 {
     public interface IPlayerService
     {
-        public Dictionary<string, Player> Players { get; set; }
-        public IRepository _repository { get; set; }
+        public Dictionary<string, Player> Players { get; }
+        public IRepository _repository { get; }
 
         public bool ConnectUser(string PlayerID, string UserName, string ConnectionString);
         public bool DiscconectPlayer(string playerId);
         public bool IsUserConnected(string UserID);
-        public IReadOnlyList<string> getAllOnlinePlayersConnectinosExceptThatID(string userID);
+        public IReadOnlyList<string> GetAllConnectedUserIds(string userID);
         public bool IsAvalable(string PlayerID);
         public bool IfInGameGetGameID(string playerId, out string GameId);
         public void StartGame(GamePlay game);

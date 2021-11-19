@@ -26,6 +26,12 @@ export class GameBoardService {
   constructor(private sound:SoundService,private animatePieces:AnimatePiecesService,private animateDices:AnimateDicesService) { 
   }
 
+  initGame(playerColor:string,isStarting:boolean){
+    this.playerColor = playerColor;
+    this.isPlayerTurn = isStarting;
+    this.init()
+  }
+
   dragStarted(startedFrom:number){
       console.log(`Started from:${startedFrom}`);
       this.setAllFalse(this.playerMoveableTo);
@@ -180,5 +186,25 @@ export class GameBoardService {
         result.push(i);
     });
     return result;
+  }
+
+  private init(){
+    if(this.playerColor == 'white')
+    {
+      this.whitePieces = [0,0,0,0,0,0,5,0,3,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,2,0];
+      this.blackPieces = [0,2,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,3,0,5,0,0,0,0,0,0];
+    }else{
+      this.whitePieces = [0,2,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,3,0,5,0,0,0,0,0,0];
+      this.blackPieces = [0,0,0,0,0,0,5,0,3,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,2,0];
+    }
+
+    if(this.isPlayerTurn)
+    {
+      
+    }else
+    {
+      this.setAllFalse(this.playerMoveable);
+      this.setAllFalse(this.playerMoveableTo);
+    }
   }
 }

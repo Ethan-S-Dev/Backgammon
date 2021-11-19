@@ -17,6 +17,7 @@ namespace Backgammon.Services.Game.App.Services
         {
             _cubeService = cubeService;
             OnlineGames = new();
+            GameRequests = new();
         }
         public void CreateNewGame(string SenderID, string ReciverID, string gameID, string firstConnection, string secondConnection)
         {

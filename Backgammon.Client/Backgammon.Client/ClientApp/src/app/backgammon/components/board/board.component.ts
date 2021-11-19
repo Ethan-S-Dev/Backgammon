@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Input } from '@angular/core';
+import { Game } from 'src/app/models/Game';
 import { GameBoardService } from '../../services/game-board.service';
 
 @Component({
@@ -7,6 +8,8 @@ import { GameBoardService } from '../../services/game-board.service';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent implements OnInit {
+  @Input() game:Game|undefined;
+
   readonly left_top = [13, 14, 15, 16, 17, 18];
   readonly left_bottom = [12, 11, 10, 9, 8, 7];
   readonly right_top = [19, 20, 21, 22, 23, 24];
@@ -18,18 +21,20 @@ export class BoardComponent implements OnInit {
   whitePieces: number[] = [];
   dices: { dice1: number, dice2: number } | undefined;
 
-  constructor(private logic: GameBoardService, private cdr: ChangeDetectorRef) {
+  constructor(private boardService: GameBoardService) {
 
   }
-
 
   ngOnInit(): void {
-    this.logic.observeBlackPieces.subscribe(p => this.blackPieces = p);
-    this.logic.observeWhitePieces.subscribe(p => this.whitePieces = p);
-    this.logic.observeMoveable.subscribe(m => this.moveable = m);
-    this.logic.observeMoveableTo.subscribe(m =>{ this.moveableTo = m; console.log(m);});
-    this.logic.observeDices.subscribe(d => this.dices = d);
+    if(this.game)
+      this.boardService.initGame(this.game.playerColor,this.game.isStarting);
+    this.boardService.observeBlackPieces.subscribe(p => this.blackPieces = p);
+    this.boardService.observeWhitePieces.subscribe(p => this.whitePieces = p);
+    this.boardService.observeMoveable.subscribe(m => this.moveable = m);
+    this.boardService.observeMoveableTo.subscribe(m =>{ this.moveableTo = m; console.log(m);});
+    this.boardService.observeDices.subscribe(d => this.dices = d);
   }
+
   allowDrop(ev: DragEvent,i:number) {
     if(this.moveableTo[i])
       ev.preventDefault();
@@ -37,13 +42,13 @@ export class BoardComponent implements OnInit {
 
   async drop(ev: DragEvent, toStack: number) {
     ev.preventDefault();
-    this.logic.dragStopped();
+    this.boardService.dragStopped();
     let fromStack = ev.dataTransfer?.getData("fromStack");
     let pieceColor = ev.dataTransfer?.getData("color");
     console.log(`Drop ${pieceColor} piece from ${fromStack} to ${toStack}`)
     if (fromStack && pieceColor) {
       let from = new Number(fromStack) as number;
-      await this.logic.playerMove(from, toStack, pieceColor);
+      await this.boardService.playerMove(from, toStack, pieceColor);
     }
    
   }
@@ -59,23 +64,23 @@ export class BoardComponent implements OnInit {
     console.log(`Removed ${pieceColor} piece from ${fromStack}`)
     if (fromStack && pieceColor) {
       let from = new Number(fromStack) as number;
-      await this.logic.playerRemovePice(from,pieceColor);
+      await this.boardService.playerRemovePice(from,pieceColor);
     }
   }
 
   dragStarted(from:number){
-    this.logic.dragStarted(from);
+    this.boardService.dragStarted(from);
   }
 
   dragEnded(from:number){
-    this.logic.dragStopped();
+    this.boardService.dragStopped();
   }
 
   async randomMove() {
-    await this.logic.doRandomMove();
+    await this.boardService.doRandomMove();
   }
 
   async rollDices() {
-    await this.logic.rollDices();
+    await this.boardService.rollDices();
   }
 }

@@ -10,12 +10,11 @@ namespace Backgammon.Services.Game.Infra
         {
         }
 
-        public DbSet<GameResultToHistory> GameResults;
-        public DbSet<PlayerDto> Players;
+        public DbSet<GameResultToHistory> GameResults { get; set; }
+        public DbSet<PlayerDto> Players { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
 
             modelBuilder.Entity<PlayerDto>().HasData(
              new PlayerDto() { ID = "Hey", UserName = "svfvfv" },

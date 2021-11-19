@@ -2,4 +2,18 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    gap: 3px;
+}
+
+.send-form {
+    display: flex;
+}
+
+.send-btn {
+    height: 100%;
+}
+
+#messageBody {
+    resize: none;
+    width: 90%;
 }
