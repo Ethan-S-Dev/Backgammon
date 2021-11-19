@@ -12,6 +12,7 @@ namespace Backgammon.Services.Game.Api.Contracts.Dtos
         YouAreInGame,
         OpponentInGame,
         SenderUnavilable,
-        IlligelMove
+        IlligelMove,
+        PlayerUseCheats
     }
 }

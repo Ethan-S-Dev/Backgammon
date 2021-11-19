@@ -72,6 +72,9 @@ namespace Backgammon.Services.Game.Domain.Models
         //avalibilty Session
         public int CheckAvailbilty(PlayersMove playersMove)//-1 notAvalble 0 Avalble 1 AtePlayer 2 GotPlayerOut 3 Uncaged 4 UncagedAndAte
         {
+            if (!CurrentPlayes.IsNumAvalble(playersMove.NumOfSteps))
+                return -2;
+
             if (playersMove.PlayersColor == Colors.Player2)
             {
                 playersMove.CellNumber = 25 - playersMove.CellNumber;
@@ -95,7 +98,7 @@ namespace Backgammon.Services.Game.Domain.Models
                 else
                     if (Cells[AbsoluteDestanationCell].NumOfPieces <= 1)//if eatsPlayer
                     return 1;
-                else
+                else //there more then two pieces of enemy
                     return -1;
             }
             else //if the player is trying toGetOutAPiece

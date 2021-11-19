@@ -143,6 +143,11 @@ namespace Backgammon.Services.Game.Api.HubConfig
                 await Clients.Client(CurrentPlayerConnection).SendAsync("GameError", GameErrors.IlligelMove);//Sends the id of the cheating player
                 return;
             }
+            if (CheckAvalblility == -2)//checks All The Options
+            {
+                await Clients.Client(CurrentPlayerConnection).SendAsync("GameError", GameErrors.PlayerUseCheats);//Sends the id of the cheating player
+                return;
+            }
 
             var HasWon = game.MoveTrueIfWins(playersMove, CheckAvalblility);//makes all the moves and The Board changes
             if (HasWon)
