@@ -58,7 +58,11 @@ namespace Backgammon.Services.Game.App.Services
 
         public bool IsConnectionExistsInGame(string gameId, string playersConnection)
         {
-            return OnlineGames[gameId].FirstPlayerConnection == playersConnection || OnlineGames[gameId].SecondPlayerConnection == playersConnection;
+            if(OnlineGames.TryGetValue(gameId,out var game))
+            {
+                return game.FirstPlayerConnection == playersConnection || game.SecondPlayerConnection == playersConnection;
+            }
+            return false;
         }
 
         public void FinishGame(string GameId)

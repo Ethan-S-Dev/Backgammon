@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, delay } from 'rxjs';
+import { LastMove } from 'src/app/contracts/LastMove';
 import { Move } from 'src/app/contracts/Move';
 import { TwoNums } from 'src/app/models/TwoNums';
 import { GameService } from 'src/app/services/game/game.service';
@@ -21,6 +22,7 @@ export class GameBoardService {
   private playerMoveable = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
   private playerMoveableTo = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
   private dices:{dice1:number,dice2:number} = {dice1:4,dice2:5};
+  private rolls:number[] = [];
 
   observeWhitePieces:BehaviorSubject<number[]> = new BehaviorSubject<number[]>(this.whitePieces);
   observeBlackPieces:BehaviorSubject<number[]> = new BehaviorSubject<number[]>(this.blackPieces);
@@ -34,30 +36,23 @@ export class GameBoardService {
     private logic:LogicService,
     private gameService:GameService) {
 
-      gameService.onTurnOver.subscribe(async d=>{
+      gameService.onTurnOver.subscribe(d=>{
         if(d)
         { 
-          await this.doTurnOver(d)
+          this.doTurnOver(d)
         }
       });
 
-      gameService.onOpponentMove.subscribe(async m=>{
+      gameService.onOpponentMove.subscribe(m=>{
         if(m){
-          await this.doOpponentMove(m);
+          this.doOpponentMove(m);
         }
       });
 
-      gameService.onOpponentLastMove.subscribe(async l=>{
+      gameService.onOpponentLastMove.subscribe(l=>{
         if(l)
         {
-          await this.doOpponentMove(l.opponentMove);
-
-          await this.rollDices(l.yourDices.firstCube,l.yourDices.secondCube);
-
-          this.isPlayerTurn = true;
-
-          this.playerMoveable = this.logic.moveableFrom(l.yourDices,this.playerColor == 'white' ? this.whitePieces : this.blackPieces,this.playerColor == 'white' ? this.blackPieces : this.whitePieces);
-          this.observeMoveable.next(this.playerMoveable);
+          this.opponentLastMove(l);
         }
       });
 
@@ -71,13 +66,16 @@ export class GameBoardService {
 
     await this.startRollAnimation(whoIsFirstRoll);
 
+    await this.sleep(3000);
+
     await this.rollDices(firstRoll.firstCube,firstRoll.secondCube);
 
     if(this.isPlayerTurn)
     {
-      this.playerMoveable = this.logic.moveableFrom(firstRoll,this.playerColor == 'white' ? this.whitePieces : this.blackPieces,this.playerColor == 'white' ? this.blackPieces : this.whitePieces);
+      this.rolls = this.logic.getAvailableRolls(firstRoll);
+      this.playerMoveable = this.getAvailableMovesFromLogic();
       this.observeMoveable.next(this.playerMoveable);
-    }
+    }   
   }
   private async startRollAnimation(whoIsFirstRoll: TwoNums) {
     let playerDice:number;
@@ -115,12 +113,12 @@ export class GameBoardService {
       return;
     if(this.playerColor == 'white')
     {
-      this.playerMoveableTo = this.logic.moveableTo({firstCube:this.dices.dice1,secondCube:this.dices.dice2},
+      this.playerMoveableTo = this.logic.moveableTo(this.logic.getTwoNumsFromRolls(this.rolls),
         startedFrom,
         this.whitePieces,
         this.blackPieces);
     }else{
-      this.playerMoveableTo = this.logic.moveableTo({firstCube:this.dices.dice1,secondCube:this.dices.dice2},
+      this.playerMoveableTo = this.logic.moveableTo(this.logic.getTwoNumsFromRolls(this.rolls),
         startedFrom,
         this.blackPieces,
         this.whitePieces);
@@ -142,58 +140,50 @@ export class GameBoardService {
     this.observeDices.next(this.dices);
   }
 
-  private async enemyRollDices(dice1:number,dice2:number) {
-    this.dices = {dice1:dice1,dice2:dice2};  
-    this.sound.playDiceRoll();
-    await this.animateDices.animate(this.dices.dice1,this.dices.dice2);
-    this.observeDices.next(this.dices);
-  }
+  private async opponentLastMove(l:LastMove){
 
-  async playerMove(from:number,to:number){
+    if(l.opponentMove.numOfSteps != 0)
+      await this.doOpponentMove(l.opponentMove);
 
-    // check logic
+    await this.rollDices(l.yourDices.firstCube,l.yourDices.secondCube)
 
-    //if ok to move!
-    let numOfSteps = to-from;
-    await this.gameService.sendMove({gameId:this.gameId,stackNumber:from,numOfSteps:numOfSteps});
-    if(numOfSteps == this.dices.dice1)
-    {
-      this.dices.dice1 = 0;
-    }else
-    {
-      this.dices.dice2 = 0;
-    }
-    this.observeDices.next(this.dices);
-    await this.doMove(from,to,this.playerColor);
-    this.playerMoveable = this.logic.moveableFrom({firstCube:this.dices.dice1,secondCube:this.dices.dice2},this.playerColor == 'white' ? this.whitePieces : this.blackPieces,this.playerColor == 'white' ? this.blackPieces : this.whitePieces);
+    this.isPlayerTurn = true;
+    this.rolls = this.logic.getAvailableRolls(l.yourDices);
+    this.playerMoveable = this.getAvailableMovesFromLogic();
     this.observeMoveable.next(this.playerMoveable);
   }
 
-  async playerRemovePice(from:number,player:string){
-    // check logic
-
+  async playerMove(from:number,to:number){
     //if ok to move!
-    await this.doRemove(from,player);
-  }
-
-  async doRandomMove(){
-    let player = Math.floor(Math.random()*2)%2 == 0 ? 'white':'black';
-    let playerIndexes = player == 'white' ? this.getIndexes(this.whitePieces):this.getIndexes(this.blackPieces);
-    let fromIndex = Math.floor(Math.random()*playerIndexes.length);
-    let from = playerIndexes[fromIndex];
-
-    let remove = Math.floor(Math.random()*6) < 1;
-    if(remove)
+    let numOfSteps = to-from;
+    
+    if(this.logic.isAte(this.playerColor == 'white'?this.blackPieces:this.whitePieces,to))
     {
-      await this.doRemove(from,player);
-      return;
+      await this.doMove(to,25,this.playerColor == 'white'?'black':'white');
     }
+    
+    await this.doMove(from,to,this.playerColor);
+    
+    
+    this.rolls = this.logic.removeRolls(this.rolls,numOfSteps);
+    this.playerMoveable = this.getAvailableMovesFromLogic();
+    this.observeMoveable.next(this.playerMoveable);
 
-    let noEnemyIndexes = player == 'white' ? this.getMoveToIndexes(this.blackPieces):this.getMoveToIndexes(this.whitePieces);
-    let toIndex = Math.floor(Math.random()*noEnemyIndexes.length);
-    let to = noEnemyIndexes[toIndex];
-    await this.doMove(from,to,player);
+    await this.gameService.sendMove({gameId:this.gameId,stackNumber:from,numOfSteps:numOfSteps});
   }
+
+  async playerRemovePice(from:number){
+    // check logic
+    let numOfSteps = this.logic.getRemoveSteps(this.rolls,from);
+    await this.doRemove(from,this.playerColor);
+    //if ok to move!
+    
+    this.rolls = this.logic.removeRolls(this.rolls,numOfSteps);
+    this.playerMoveable = this.getAvailableMovesFromLogic();
+    this.observeMoveable.next(this.playerMoveable);
+
+    await this.gameService.sendMove({gameId:this.gameId,stackNumber:from,numOfSteps:numOfSteps});
+  } 
 
   private setAllFalse(list:boolean[]){
     for (let index = 0; index < list.length; index++) {
@@ -247,9 +237,7 @@ export class GameBoardService {
       
         this.blackPieces[to] = this.blackPieces[to]+1;
         this.updateBlack();
-      }
-      if(from != to)
-        this.sound.playPieceMove();     
+      }  
   }
 
   private updateWhite(){
@@ -295,13 +283,28 @@ export class GameBoardService {
     this.setAllFalse(this.playerMoveableTo);
     this.updateMoveable();
 
-    await this.enemyRollDices(nums.firstCube,nums.secondCube);
+    await this.rollDices(nums.firstCube,nums.secondCube);
+  }
+
+  private sleep(ms:number){
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   private async doOpponentMove(move:Move){
     let to = move.stackNumber + move.numOfSteps;
     let opponent = this.playerColor == 'white' ? 'black' : 'white';
-    await this.doMove(move.stackNumber,to,opponent);
+
+    if(to > 24 || to < 1)
+      await this.doRemove(move.stackNumber,opponent)
+    else
+    {
+      if(this.logic.isAte(opponent == 'white'?this.blackPieces:this.whitePieces,to))
+      {
+        await this.doMove(to,0,opponent == 'white'?'black':'white');
+      }
+
+      await this.doMove(move.stackNumber,to,opponent);
+    }
   }
 
   private initBoard(){
@@ -316,5 +319,9 @@ export class GameBoardService {
       this.setAllFalse(this.playerMoveable);
       this.setAllFalse(this.playerMoveableTo);
       this.updateState();
+  }
+
+  private getAvailableMovesFromLogic(){
+    return this.logic.moveableFrom(this.logic.getTwoNumsFromRolls(this.rolls),this.playerColor == 'white' ? this.whitePieces : this.blackPieces,this.playerColor == 'white' ? this.blackPieces : this.whitePieces);
   }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Backgammon.Services.Game.Domain.Models
@@ -24,7 +25,7 @@ namespace Backgammon.Services.Game.Domain.Models
         {
             GameId = gameId;
             Cells = new GameCell[] {
-                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.Player2},
                 new GameCell() { NumOfPieces = 2, Color = Colors.Player1},
                 new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
                 new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
@@ -49,7 +50,7 @@ namespace Backgammon.Services.Game.Domain.Models
                 new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
                 new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
                 new GameCell() { NumOfPieces = 2, Color = Colors.Player2},
-                new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
+                new GameCell() { NumOfPieces = 0, Color = Colors.Player1},
             };
             FirstPlayerID = firstId;
             SecondPlayerID = secondId;
@@ -89,14 +90,14 @@ namespace Backgammon.Services.Game.Domain.Models
                 else
                     return Status + 3;
             }
-            if (AbsoluteDestanationCell < 24 && AbsoluteDestanationCell > 1)
+            if (AbsoluteDestanationCell < 25 && AbsoluteDestanationCell > 0)
             {
                 if (Cells[AbsoluteDestanationCell].Color == Colors.NoColor || Cells[AbsoluteDestanationCell].Color == playersMove.PlayersColor)
                 {
                     return 0;
                 }
                 else
-                    if (Cells[AbsoluteDestanationCell].NumOfPieces <= 1)//if eatsPlayer
+                    if (Cells[AbsoluteDestanationCell].NumOfPieces == 1)//if eatsPlayer
                     return 1;
                 else //there more then two pieces of enemy
                     return -1;
@@ -112,10 +113,12 @@ namespace Backgammon.Services.Game.Domain.Models
 
         public int IsDestinationCellGoodForPlayer(int destinationCell, Colors playersColor)//
         {
+
+
             if (Cells[destinationCell].Color == playersColor || Cells[destinationCell].Color == Colors.NoColor)
                 return 0;
             else
-                if (Cells[destinationCell].NumOfPieces <= 1)
+                if (Cells[destinationCell].NumOfPieces == 1)
                 return 1;
             return -1;
         }
@@ -134,14 +137,14 @@ namespace Backgammon.Services.Game.Domain.Models
         private bool IsAbleToGetOutPlayers(Colors playersColor)
         {
             if (playersColor == Colors.Player1)
-                for (int i = 1; i <= 17; i++)
+                for (int i = 1; i < 19; i++)
                 {
                     if (Cells[i].NumOfPieces != 0)
                         if (Cells[i].Color == playersColor)
                             return false;
                 }
             else
-                for (int i = 24; i <= 7; i++)
+                for (int i = 7; i < 25; i++)
                 {
                     if (Cells[i].NumOfPieces != 0)
                         if (Cells[i].Color == playersColor)
@@ -155,21 +158,34 @@ namespace Backgammon.Services.Game.Domain.Models
             if (!IsAbleToGetOutPlayers(playersMove.PlayersColor))
                 return false;
 
-            if (playersMove.CellNumber + playersMove.NumOfSteps == 24 || playersMove.CellNumber + playersMove.NumOfSteps == 0) //אם הוא הוציא את המספר המדויק
+            if (playersMove.CellNumber + playersMove.NumOfSteps == 25 || playersMove.CellNumber + playersMove.NumOfSteps == 0) //אם הוא הוציא את המספר המדויק
                 return true;
             else //אם המספר גדול מהמספר המדוייק שנדרש כדי להוציא שחקן, בודק האם יש אופציה טובה יותר
             {
                 if (playersMove.PlayersColor == Colors.Player1)
-                    for (int i = 18; i < playersMove.CellNumber; i++)
+                    for (int i = 19; i < playersMove.CellNumber; i++)
                     {
                         if (Cells[i].NumOfPieces > 0)
+                        {
+
+                            //if (-1 < CheckAvailbilty(new PlayersMove { CellNumber = i,NumOfSteps = playersMove.NumOfSteps,PlayersColor = playersMove.PlayersColor}))
+                            //{
                             return false;
+                            //}
+                        }
                     }
                 else
                     for (int i = 6; i > playersMove.CellNumber; i--)
                     {
                         if (Cells[i].NumOfPieces > 0)
+                        {
+                            
+                            //if (-1 < CheckAvailbilty(new PlayersMove { CellNumber = 25 - i, NumOfSteps = -playersMove.NumOfSteps, PlayersColor = playersMove.PlayersColor }))
+                            //{
                             return false;
+                            //}
+                        }
+                            
                     }
             }
             return true;// במקרה שזה השחקן הרחוק ביותר
@@ -178,14 +194,14 @@ namespace Backgammon.Services.Game.Domain.Models
         //move session
         public bool MoveTrueIfWins(PlayersMove playersMove, int AvalibiltyCheck)//moves the player and Use the nums
         {
-            if (playersMove.PlayersColor == Colors.Player2)
-            {
-                playersMove.NumOfSteps = -playersMove.NumOfSteps;
-                playersMove.CellNumber = 25 - playersMove.CellNumber;
-            }
+            //if (playersMove.PlayersColor == Colors.Player2)
+            //{
+            //    playersMove.NumOfSteps = -playersMove.NumOfSteps;
+            //    playersMove.CellNumber = 25 - playersMove.CellNumber;
+            //}
 
             int AbsolueDestination = playersMove.NumOfSteps + playersMove.CellNumber;
-            CurrentPlayes.UseNum(playersMove.NumOfSteps);
+            CurrentPlayes.UseNum(Math.Abs(playersMove.NumOfSteps));
             if (AvalibiltyCheck == 3)
             {
                 if (playersMove.PlayersColor == Colors.Player1)
@@ -228,9 +244,13 @@ namespace Backgammon.Services.Game.Domain.Models
             {
                 Cells[AbsolueDestination].Color = playersMove.PlayersColor;
                 if (playersMove.PlayersColor == Colors.Player1)
+                {
                     Cells[25].NumOfPieces++;
+                }
                 else
+                {
                     Cells[0].NumOfPieces++;
+                }
             }
             else
                 if (AvalibiltyCheck == 0)
@@ -247,23 +267,66 @@ namespace Backgammon.Services.Game.Domain.Models
         public bool IsThereMoreMovements(Colors PlayersColor)//return false if there are no more possible moves
         {
             List<int> avalblePlays = CurrentPlayes.GetAvalableNumbers().ToList();
+
+
+            // If eaten
+            if (PlayersColor == Colors.Player1)
+            {
+                if (Cells[0].NumOfPieces > 0)
+                {
+                    foreach (var num in avalblePlays)
+                    {
+                        if (CheckAvailbilty(new PlayersMove() { CellNumber = 0, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+            else
+            if (Cells[25].NumOfPieces > 0)
+            {
+                foreach (var num in avalblePlays)
+                {
+                    if (CheckAvailbilty(new PlayersMove() { CellNumber = 0, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // If not eaten
             foreach (var num in avalblePlays)
             {
                 for (int i = 1; i < 25; i++)
                 {
                     if (Cells[i].Color == PlayersColor)//אם בתא הזה יש חייל של אותו שחקן תבדוק אם הוא יכול לזוז
-                        if (CheckAvailbilty(new PlayersMove() { CellNumber = i, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
+                    {
+                        if (PlayersColor == Colors.Player1)
                         {
-                            return true;
+                            if (CheckAvailbilty(new PlayersMove() { CellNumber = i, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
+                            {
+                                return true;
+                            }
+                        }else
+                        {
+                            if (CheckAvailbilty(new PlayersMove() { CellNumber =25-i, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
+                            {
+                                return true;
+                            }
                         }
+                    }
+                        
                 }
             }
             return false;
         }
 
-        public void switchPlayersTurnAndRollCubes(string CurrentplayersID, TwoNums twoNums)//מקבל את תור השחקן הנוכחי ומחליף בחדש
+        public void switchPlayersTurnAndRollCubes(TwoNums twoNums)//מקבל את תור השחקן הנוכחי ומחליף בחדש
         {
-            if (CurrentplayersID == FirstPlayerID)
+            if (CurrentPlayersTurn == FirstPlayerID)
                 CurrentPlayersTurn = SecondPlayerID;
             else
                 CurrentPlayersTurn = FirstPlayerID;

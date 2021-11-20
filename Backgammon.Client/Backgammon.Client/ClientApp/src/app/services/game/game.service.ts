@@ -58,10 +58,12 @@ export class GameService {
         .start()
         .then(() => {
           console.log(`Game SignalR connection success! connectionId: ${this.connection?.connectionId} `);
+          this.sendPing();
         })
         .catch((error) => {
           console.log(`Game SignalR connection error: ${error}`);
         });
+      
     });
   }
 
@@ -126,25 +128,48 @@ export class GameService {
       this.onOpponentMove.next(move);
     });
 
+    this.connection?.on("Pong",()=>{
+      console.log("pong!");
+      this.sendPing();
+    });
+  }
+
+  private async sendPing(){
+    await this.sleep(5000);
+    console.log("ping!");
+    await this.connection?.invoke("Ping");
+  }
+
+  private sleep(ms:number){
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   private handleGameError(error:number){
     switch (error) {
       case 1:
+        alert("Player disconnected from game");
         console.log("Player disconnected from game");
         this.onGameError.next({message:"Opponent disconnected."})
         break;
       case 2:
+        alert("you are in game");
         console.log("you are in game");
         this.onInvitationError.next({message:"You are in game"});
         break;
       case 3:
+        alert("Opponent in game");
         // TODO
         break;
       case 4:
+        alert("Sender unavailable");
         // TODO
         break;
       case 5:
+        alert("Illegal move");
+        // TODO
+        break;
+        case 6:
+          alert("Player use cheats");
         // TODO
         break;
       default:

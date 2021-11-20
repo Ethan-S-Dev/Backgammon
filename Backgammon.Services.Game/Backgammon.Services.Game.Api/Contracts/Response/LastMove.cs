@@ -11,6 +11,6 @@ namespace Backgammon.Services.Game.Api.Contracts.Response
     public class LastMove
     {
         public Move OpponentMove { get; set; }
-        public TwoNums YourDiecs { get; set; }
+        public TwoNums YourDices { get; set; }
     }
 }

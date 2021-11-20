@@ -56,8 +56,11 @@ namespace Backgammon.Services.Game.Api.HubConfig
             {
                 if (_boardManager.IsConnectionExistsInGame(gameID, Context.ConnectionId))
                 {
-                    string otherPlayerID = _boardManager.OnlineGames[gameID].GetOthersPlayerConnection(playerID);
-                    await Clients.Client(otherPlayerID).SendAsync("GameError", GameErrors.OponentDisconnected);
+                    string otherConnectionPlayerID = _boardManager.OnlineGames[gameID].GetOthersPlayerConnection(playerID);
+                    var otherPlayerID = _boardManager.OnlineGames[gameID].GetOtherPlayersID(Context.ConnectionId);
+                    _playerService.Players[otherPlayerID].GameId = "e";
+                    _boardManager.OnlineGames.Remove(gameID);
+                    await Clients.Client(otherConnectionPlayerID).SendAsync("GameError", GameErrors.OponentDisconnected);
                 }
             }
 
@@ -163,28 +166,42 @@ namespace Backgammon.Services.Game.Api.HubConfig
             }
             if (!game.CurrentPlayes.HasMoreNumbers())
             {
-                var newNums = _boardManager.RollCubes();
-                game.switchPlayersTurnAndRollCubes(Context.User.getPlayerId(), newNums);
-                await Clients.Client(CurrentPlayerConnection).SendAsync("TurnIsOver", newNums);
-                await Clients.Client(OtherPlayerConnection).SendAsync("LastMoveOfOpponent", new LastMove() { OpponentMove = move, YourDiecs = newNums });
+                await SwitchPlayers(game, CurrentPlayerConnection, OtherPlayerConnection, playersColor, playersMove);
             }
             else //If he didnt used all his Cubes
             {
                 if (game.IsThereMoreMovements(playersColor))
                 {
-
                    await Clients.Client(OtherPlayerConnection).SendAsync("OpponentMove", new Move { GameId = gameID, NumOfSteps = -move.NumOfSteps, StackNumber = 25 - move.StackNumber });
-
                 }
                 else
                 {
-                    var newNums = _boardManager.RollCubes();
-                    game.switchPlayersTurnAndRollCubes(Context.User.getPlayerId(), newNums);
-                    await Clients.Client(CurrentPlayerConnection).SendAsync("TurnIsOver", newNums);
-                    await Clients.Client(OtherPlayerConnection).SendAsync("LastMoveOfOpponent", new LastMove() { OpponentMove = new Move { GameId = gameID, NumOfSteps = -playersMove.NumOfSteps, StackNumber = 25 - playersMove.CellNumber }, YourDiecs = newNums });
+                    await SwitchPlayers(game, CurrentPlayerConnection, OtherPlayerConnection, playersColor,playersMove);
                 }
             }
 
+        }
+
+        private async Task SwitchPlayers(GamePlay game,string CurrentPlayerConnection,string OtherPlayerConnection,Colors playersColor,PlayersMove playersMove)
+        {
+            var gameID = game.GameId;
+            var newNums = _boardManager.RollCubes();
+            
+            game.switchPlayersTurnAndRollCubes(newNums);
+
+            await Clients.Client(CurrentPlayerConnection).SendAsync("TurnIsOver", newNums);
+            if (playersColor == Colors.Player1)
+                await Clients.Client(OtherPlayerConnection).SendAsync("LastMoveOfOpponent", new LastMove() { OpponentMove = new Move { GameId = gameID, NumOfSteps = -playersMove.NumOfSteps, StackNumber = 25 - playersMove.CellNumber }, YourDices = newNums });
+            else
+                await Clients.Client(OtherPlayerConnection).SendAsync("LastMoveOfOpponent", new LastMove() { OpponentMove = new Move { GameId = gameID, NumOfSteps = playersMove.NumOfSteps, StackNumber = playersMove.CellNumber }, YourDices = newNums });
+
+            var playerNow = playersColor == Colors.Player1 ? Colors.Player2 : Colors.Player1;
+
+            if (!game.IsThereMoreMovements(playerNow))
+            {
+                await Task.Delay(5000);
+                await SwitchPlayers(game, OtherPlayerConnection, CurrentPlayerConnection, playerNow, new PlayersMove { CellNumber = 0, NumOfSteps = 0, PlayersColor = playersColor });
+            }
         }
 
         public async Task FinishGame(string WinnerID, string LosserID, string GameID)
@@ -204,6 +221,11 @@ namespace Backgammon.Services.Game.Api.HubConfig
             PlayerStats playerStats = _playerService.GetPlayerStats(PlayersID);
             await Clients.Caller.SendAsync("getPlayerStats", playerStats);
             return;
+        }
+
+        public async Task Ping()
+        {
+            await Clients.Caller.SendAsync("Pong");
         }
     }
 }

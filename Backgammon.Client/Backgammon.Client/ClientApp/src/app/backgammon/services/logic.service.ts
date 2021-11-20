@@ -6,8 +6,37 @@ import {Cell} from "../../models/Cell";
   providedIn: 'root'
 })
 export class LogicService {
+  
 
   constructor() { }
+
+  isAte(enemyPieces: number[], to: number):boolean {
+      if(enemyPieces[to] > 1)
+        return false;
+      if(enemyPieces[to] == 1)
+        return true;
+      return false;
+  }
+
+  getTwoNumsFromRolls(rolls:number[]):TwoNums{
+    if(rolls.length > 2) return {firstCube:rolls[0],secondCube:rolls[0]};
+    if(rolls.length == 2) return {firstCube:rolls[0],secondCube:rolls[1]};
+    if(rolls.length == 0) return {firstCube:0,secondCube:0};
+    return {firstCube:rolls[0],secondCube:0};
+  }
+
+  getRemoveSteps(rolls:number[],from:number):number{
+    let steps = 7;
+    rolls.forEach(n=>{
+      if(from+n > 24)
+      {
+        steps = Math.min(steps,n);
+      }
+    });
+    if(steps == 7)
+      return 0;
+    return steps;
+  }
 
   moveableFrom(nums:TwoNums,cellsWithMyPieces: number[], cellsWithOpPieces: number[]) :boolean[]{
     //making a commonCellsArray
@@ -15,14 +44,24 @@ export class LogicService {
 
     let ret = cells.map((c,i)=>{
       if(!c.isMyPiece)
-        return false;
+          return false;
 
-      let moves = this.moveableToCheck(nums,cells,i);
+      if(cellsWithMyPieces[0] > 0)
+      {
+          if(i != 0)
+            return false;
+
+          return true;
+      }
+      else
+      {
+        let moves = this.moveableToCheck(nums,cells,i);
       
-      if(moves.firstCube == 0 && moves.secondCube == 0)
-        return false
+        if(moves.firstCube == 0 && moves.secondCube == 0)
+          return false
 
-      return true;
+        return true;
+      }
     });
 
     return ret;
@@ -39,36 +78,61 @@ export class LogicService {
     return this.getMoveableTo(moves,currentCell);
   }
 
+  getAvailableRolls(nums:TwoNums):number[]{
+    if(nums.firstCube == nums.secondCube)
+    {
+      return [nums.firstCube,nums.firstCube,nums.firstCube,nums.firstCube];
+    }
+
+    return [nums.firstCube,nums.secondCube];
+  }
+
+  removeRolls(rolls:number[],num:number):number[]{
+    let removed = false;
+    return rolls.filter(n=>{
+      if(removed)
+        return true;
+
+      if(n == num)
+      {
+        removed = true;
+        return false;
+      }
+      return true;
+    });
+  }
+
   private moveableToCheck(nums:TwoNums,cells:Cell[],currentCell:number):TwoNums{
+    let newNums = {firstCube:nums.firstCube,secondCube:nums.secondCube};
     let firstDestination =  nums.firstCube + currentCell;
     let secondDestination = nums.secondCube + currentCell;
 
     if(firstDestination == currentCell)
-      nums.firstCube = 0;
+      newNums.firstCube = 0;
     else
     if(firstDestination < 25)
     {
       if(!(cells[firstDestination].isMyPiece || cells[firstDestination].numOfPieces <2 ))
-        nums.firstCube = 0;
+        newNums.firstCube = 0;
     }
     else
     if(!this.isAbleToTakeOutPiece(currentCell, nums.firstCube, cells))
-      nums.firstCube = 0;
+      newNums.firstCube = 0;
 
 
     if(secondDestination == currentCell)
-      nums.secondCube = 0
+      newNums.secondCube = 0
     else
     if(secondDestination < 25)
     {
       if(!(cells[secondDestination].isMyPiece || cells[secondDestination].numOfPieces <2 ))
-        nums.secondCube = 0;
+        newNums.secondCube = 0;
     }
     else
     if(!this.isAbleToTakeOutPiece(currentCell, nums.secondCube, cells))
-      nums.secondCube = 0;
+      newNums.secondCube = 0;
 
-    return nums;
+    return newNums;
   }
 
   private margeCells(cellsWithMyPieces: number[], cellsWithOpPieces: number[]){
@@ -87,10 +151,20 @@ export class LogicService {
     let ret = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
 
     if(twoNums.firstCube > 0)
-      ret[current + twoNums.firstCube] = true;
+    {
+      if(current + twoNums.firstCube > 24)
+        ret[25] = true;
+      else
+        ret[current + twoNums.firstCube] = true;
+    }
 
     if(twoNums.secondCube > 0)
-      ret[current + twoNums.secondCube] = true;
+    {
+      if(current + twoNums.firstCube > 24)
+        ret[25] = true;
+      else
+        ret[current + twoNums.secondCube] = true;
+    }
 
     return ret;
   }

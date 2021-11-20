@@ -96,5 +96,4 @@ export class LobbyComponent implements OnInit {
   openChat(currentChat:Chatter){
     this.currentChat = currentChat;
   }
-
 }

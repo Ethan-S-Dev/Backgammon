@@ -54,17 +54,16 @@ export class BoardComponent implements OnInit {
   }
 
   allowDropOut(ev: DragEvent) {
-    ev.preventDefault();
+    if(this.moveableTo[25])
+      ev.preventDefault();
   }
 
   async dropOut(ev: DragEvent) {
     ev.preventDefault();
     let fromStack = ev.dataTransfer?.getData("fromStack");
-    let pieceColor = ev.dataTransfer?.getData("color");
-    console.log(`Removed ${pieceColor} piece from ${fromStack}`)
-    if (fromStack && pieceColor) {
+    if (fromStack) {
       let from = new Number(fromStack) as number;
-      await this.boardService.playerRemovePice(from,pieceColor);
+      await this.boardService.playerRemovePice(from);
     }
   }
 
@@ -74,10 +73,6 @@ export class BoardComponent implements OnInit {
 
   dragEnded(from:number){
     this.boardService.dragStopped();
-  }
-
-  async randomMove() {
-    await this.boardService.doRandomMove();
   }
 
   // async rollDices() {
