@@ -6,7 +6,9 @@ export const environment : Env = {
   production: false,
   api:{
     identity:'http://localhost:5000/api',
-    chat:'http://localhost:5050/api'
+    chat:'http://localhost:5050/api',
+    game:'http://localhost:5002/GameApi'
+
   },
   hubs:{
     chat:"http://localhost:5050/hubs/chat",
@@ -23,7 +25,8 @@ export interface Env{
 
 export interface Api{
   identity:string,
-  chat:string
+  chat:string,
+  game:string
 }
 
 export interface Hubs{

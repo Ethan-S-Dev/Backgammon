@@ -13,12 +13,15 @@ import { Player } from 'src/app/models/Player';
 import { TwoNums } from 'src/app/models/TwoNums';
 import { environment } from 'src/environments/environment';
 import { TurnOver } from 'src/app/contracts/TurnOver';
+import { HttpClient } from '@angular/common/http';
+import {PlayerStats} from 'src/app/contracts/PlayerStats';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
 
+  private readonly API = environment.api;
   connection?: signalR.HubConnection;
   connectedPlayers:BehaviorSubject<Player[]>;
   onGameError:BehaviorSubject<GameError|undefined>;
@@ -32,8 +35,9 @@ export class GameService {
   onOpponentMove:BehaviorSubject<Move|undefined>;
 
   private readonly HUBS = environment.hubs;
+  private
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.onGameError = new BehaviorSubject<GameError|undefined>(undefined);
     this.onInvitationError = new BehaviorSubject<GameError|undefined>(undefined);
     this.onGameRequest = new BehaviorSubject<Request|undefined>(undefined);
@@ -68,6 +72,9 @@ export class GameService {
     });
   }
 
+  public getPlayerStats(playerId:string){
+    let stats = this.http.get<PlayerStats>(`${this.API.game}/GetPlayersStats/?${playerId}`)
+  }
   public closeConnection(){
     this.connection?.stop()
     .then(()=>{

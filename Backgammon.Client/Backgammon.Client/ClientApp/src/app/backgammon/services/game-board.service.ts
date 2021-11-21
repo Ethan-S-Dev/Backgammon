@@ -58,6 +58,7 @@ export class GameBoardService {
         }
       });
 
+
   }
 
   async initGame(playerColor:string,isStarting:boolean,whoIsFirstRoll:TwoNums,firstRoll:TwoNums,gameId:string){

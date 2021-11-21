@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Backgammon.Services.Game.Api.Controllers
 {
+    [Route ("GameApi")]
     public class GameController : Controller
     {
         ICubeService _cubeService;
@@ -27,6 +28,8 @@ namespace Backgammon.Services.Game.Api.Controllers
             return nums.ToString();
         }
 
+        public PlayerStats GetPlayersStats(string playerId)=>  _playerService.GetPlayerStats(playerId);
+        
         public Dictionary<string, Player> UpdateOnlineUsers() => _playerService.Players;
     }
 
