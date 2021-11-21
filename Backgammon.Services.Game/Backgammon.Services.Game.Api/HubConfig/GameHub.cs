@@ -57,14 +57,14 @@ namespace Backgammon.Services.Game.Api.HubConfig
                 if (_boardManager.IsConnectionExistsInGame(gameID, Context.ConnectionId))
                 {
                     string otherConnectionPlayerID = _boardManager.OnlineGames[gameID].GetOthersPlayerConnection(playerID);
-                    var otherPlayerID = _boardManager.OnlineGames[gameID].GetOtherPlayersID(Context.ConnectionId);
+                    var otherPlayerID = _boardManager.OnlineGames[gameID].GetOtherPlayersID(playerID);
                     _playerService.Players[otherPlayerID].GameId = "e";
                     _boardManager.OnlineGames.Remove(gameID);
                     await Clients.Client(otherConnectionPlayerID).SendAsync("GameError", GameErrors.OponentDisconnected);
                 }
             }
 
-            if (_playerService.DiscconectPlayer(playerID))//if its his last conection
+            if (_playerService.DiscconectPlayer(playerID))//checks if its his last connection -- It is also disconnects him
                 await Clients.All.SendAsync("PlayerDisconnected", playerID);
         }
 
