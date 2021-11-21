@@ -1,5 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, Input } from '@angular/core';
+import { PlayerStats } from 'src/app/contracts/PlayerStats';
 import { StartGame } from 'src/app/models/StartGame';
+import { GameService } from 'src/app/services/game/game.service';
 import { GameBoardService } from '../../services/game-board.service';
 
 @Component({
@@ -21,20 +23,28 @@ export class BoardComponent implements OnInit {
   blackPieces: number[] = [];
   whitePieces: number[] = [];
   dices: { dice1: number, dice2: number } | undefined;
+  playerStats: PlayerStats | undefined;
+  opponentStats: PlayerStats | undefined;
 
-  constructor(private boardService: GameBoardService) {
+
+  constructor(private boardService: GameBoardService,private gameService:GameService) {
 
   }
 
   ngOnInit(): void {
-    if(this.game)
-      this.boardService.initGame(this.game.playerColor,this.game.isStarting,this.game.whoIsFirstRoll,this.game.firstRoll,this.game.gameId);
+    if(!this.game)
+    return ;
+    this.boardService.initGame(this.game.playerColor,this.game.isStarting,this.game.whoIsFirstRoll,this.game.firstRoll,this.game.gameId);
     this.boardService.observeBlackPieces.subscribe(p => this.blackPieces = p);
     this.boardService.observeWhitePieces.subscribe(p => this.whitePieces = p);
     this.boardService.observeMoveable.subscribe(m => this.moveable = m);
     this.boardService.observeMoveableTo.subscribe(m =>{ this.moveableTo = m;});
     this.boardService.observeDices.subscribe(d => this.dices = d);
     this.boardService.observePlayerTurn.subscribe(t=>this.playerTurn = t);
+    this.gameService.getPlayerStats(this.game.player.id).subscribe((stats)=> this.playerStats = stats, err=> console.log(err));
+    this.gameService.getPlayerStats(this.game.opponent.id).subscribe((stats)=> this.opponentStats = stats, err=> console.log(err));
+
+    
   }
 
   allowDrop(ev: DragEvent,i:number) {
@@ -76,6 +86,7 @@ export class BoardComponent implements OnInit {
   dragEnded(from:number){
     this.boardService.dragStopped();
   }
+
 
   // async rollDices() {
   //   await this.boardService.rollDices();

@@ -1,10 +1,12 @@
+import { Chatter } from "./Chatter";
 import { TwoNums } from "./TwoNums";
 
 export interface StartGame{
     gameId:string,
+    player:Chatter,
     playerColor:string,
     isStarting:boolean,
     whoIsFirstRoll:TwoNums,
     firstRoll:TwoNums,
-    opponentName:string
+    opponent:Chatter
 }

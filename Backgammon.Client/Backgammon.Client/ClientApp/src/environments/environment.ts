@@ -7,7 +7,7 @@ export const environment : Env = {
   api:{
     identity:'http://localhost:5000/api',
     chat:'http://localhost:5050/api',
-    game:'http://localhost:5002/GameApi'
+    game:'http://localhost:5002/api/game'
 
   },
   hubs:{

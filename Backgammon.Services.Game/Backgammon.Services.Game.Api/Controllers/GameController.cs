@@ -1,6 +1,7 @@
 ﻿using Backgammon.Services.Game.App.Interfaces;
 using Backgammon.Services.Game.Domain.Interfaces;
 using Backgammon.Services.Game.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading;
@@ -8,8 +9,10 @@ using System.Threading.Tasks;
 
 namespace Backgammon.Services.Game.Api.Controllers
 {
-    [Route ("GameApi")]
-    public class GameController : Controller
+    [ApiController]
+    [Route ("api/[controller]")]
+    [Authorize]
+    public class GameController : ControllerBase
     {
         ICubeService _cubeService;
         IPlayerService _playerService;
@@ -28,7 +31,16 @@ namespace Backgammon.Services.Game.Api.Controllers
             return nums.ToString();
         }
 
-        public PlayerStats GetPlayersStats(string playerId)=>  _playerService.GetPlayerStats(playerId);
+        public IActionResult GetPlayersStats(string playerId)
+        {
+            if (string.IsNullOrEmpty(playerId))
+                return BadRequest("player id was null");
+            var playerStats = _playerService.GetPlayerStats(playerId);
+            if (playerStats == null)
+                return BadRequest("player was not found");
+            return Ok(_playerService.GetPlayerStats(playerId));
+        }
+
         
         public Dictionary<string, Player> UpdateOnlineUsers() => _playerService.Players;
     }

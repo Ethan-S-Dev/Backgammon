@@ -120,14 +120,16 @@ namespace Backgammon.Services.Game.App.Services
             return player.GameHistory.Count();
         }
 
-        public PlayerStats GetPlayerStats(string playerID) => new PlayerStats() { GamePlayed = GetPlayersTotalPlayes(playerID), WinPrecentage = GetPlayersWinPrecentage(playerID) };
+        public PlayerStats GetPlayerStats(string playerID)
+        {
+            if (!Players.TryGetValue(playerID, out _))
+                return null;
+            return new PlayerStats()
+            {
+                GamePlayed = GetPlayersTotalPlayes(playerID),
+                WinPrecentage = GetPlayersWinPrecentage(playerID)
+            };
 
-        //public bool IsConnected(Guid PlayerID)
-        //{
-        //    if (Players.TryGetValue(PlayerID, out Player p))
-        //        return true;
-        //    else return false;
-        //}
-
+        }
     }
 }

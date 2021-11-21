@@ -35,7 +35,7 @@ export class GameService {
   onOpponentMove:BehaviorSubject<Move|undefined>;
 
   private readonly HUBS = environment.hubs;
-  private
+
 
   constructor(private http: HttpClient) {
     this.onGameError = new BehaviorSubject<GameError|undefined>(undefined);
@@ -73,7 +73,7 @@ export class GameService {
   }
 
   public getPlayerStats(playerId:string){
-    let stats = this.http.get<PlayerStats>(`${this.API.game}/GetPlayersStats/?${playerId}`)
+    return this.http.get<PlayerStats>(`${this.API.game}/GetPlayersStats/?${playerId}`)
   }
   public closeConnection(){
     this.connection?.stop()
