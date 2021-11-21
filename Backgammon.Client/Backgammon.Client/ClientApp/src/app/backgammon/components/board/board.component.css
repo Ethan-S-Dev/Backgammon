@@ -8,13 +8,34 @@
 .player-box {
     grid-column: 2;
     grid-row: 2;
-    width: 100%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
 }
 
 .enemy-box {
     grid-column: 2;
     grid-row: 1;
-    width: 100%;
+    width: 50%;
+}
+
+.card {
+    margin: 1%;
+    padding-top: 10%;
+    padding-bottom: 10%;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    background-color: blanchedalmond;
+}
+
+.player-card.his-turn {
+    border: 2px solid rgba(47, 47, 255, 0.3);
+}
+
+.enemy-card.his-turn {
+    border: 2px solid rgba(255, 47, 47, 0.3);
 }
 
 .board-container {

@@ -12,6 +12,7 @@ import { RequestResponse } from 'src/app/contracts/RequestResponse';
 import { Player } from 'src/app/models/Player';
 import { TwoNums } from 'src/app/models/TwoNums';
 import { environment } from 'src/environments/environment';
+import { TurnOver } from 'src/app/contracts/TurnOver';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,7 @@ export class GameService {
   onGameRequestDenied:BehaviorSubject<Player|undefined>;
   onGameStart:BehaviorSubject<FirstMove|undefined>;
   onGameResult:BehaviorSubject<GameResult|undefined>;
-  onTurnOver:BehaviorSubject<TwoNums|undefined>;
+  onTurnOver:BehaviorSubject<TurnOver|undefined>;
   onOpponentLastMove:BehaviorSubject<LastMove|undefined>;
   onOpponentMove:BehaviorSubject<Move|undefined>;
 
@@ -39,7 +40,7 @@ export class GameService {
     this.onGameRequestDenied = new BehaviorSubject<Player|undefined>(undefined);
     this.onGameStart = new BehaviorSubject<FirstMove|undefined>(undefined);
     this.onGameResult = new BehaviorSubject<GameResult|undefined>(undefined);
-    this.onTurnOver = new BehaviorSubject<TwoNums|undefined>(undefined);
+    this.onTurnOver = new BehaviorSubject<TurnOver|undefined>(undefined);
     this.onOpponentLastMove = new BehaviorSubject<LastMove|undefined>(undefined);
     this.onOpponentMove = new BehaviorSubject<Move|undefined>(undefined);
     this.connectedPlayers = new BehaviorSubject<Player[]>([]);
@@ -115,8 +116,8 @@ export class GameService {
       this.onGameResult.next(result);
     });
 
-    this.connection?.on("TurnIsOver",(dices:TwoNums)=>{
-      this.onTurnOver.next(dices);
+    this.connection?.on("TurnIsOver",(turnOver:TurnOver)=>{
+      this.onTurnOver.next(turnOver);
     });
 
     this.connection?.on("LastMoveOfOpponent",(lastMove:LastMove)=>{
@@ -129,14 +130,12 @@ export class GameService {
     });
 
     this.connection?.on("Pong",()=>{
-      console.log("pong!");
       this.sendPing();
     });
   }
 
   private async sendPing(){
     await this.sleep(5000);
-    console.log("ping!");
     await this.connection?.invoke("Ping");
   }
 

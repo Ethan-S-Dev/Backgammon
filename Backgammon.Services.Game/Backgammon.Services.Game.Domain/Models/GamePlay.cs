@@ -20,12 +20,11 @@ namespace Backgammon.Services.Game.Domain.Models
         //public NumbersToPlay { get; set; }
         public NumsToPlay CurrentPlayes { get; set; }
 
-
         public GamePlay(string firstId, string secondId, string gameId, string FirstConnection, string SecondConnection)
         {
             GameId = gameId;
             Cells = new GameCell[] {
-                new GameCell() { NumOfPieces = 0, Color = Colors.Player2},
+                new GameCell() { NumOfPieces = 0, Color = Colors.Player1},
                 new GameCell() { NumOfPieces = 2, Color = Colors.Player1},
                 new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
                 new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
@@ -50,7 +49,7 @@ namespace Backgammon.Services.Game.Domain.Models
                 new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
                 new GameCell() { NumOfPieces = 0, Color = Colors.NoColor},
                 new GameCell() { NumOfPieces = 2, Color = Colors.Player2},
-                new GameCell() { NumOfPieces = 0, Color = Colors.Player1},
+                new GameCell() { NumOfPieces = 0, Color = Colors.Player2},
             };
             FirstPlayerID = firstId;
             SecondPlayerID = secondId;
@@ -81,6 +80,8 @@ namespace Backgammon.Services.Game.Domain.Models
                 playersMove.CellNumber = 25 - playersMove.CellNumber;
                 playersMove.NumOfSteps = -playersMove.NumOfSteps;
             }
+
+
             int AbsoluteDestanationCell = playersMove.CellNumber + playersMove.NumOfSteps;
             if (IsEaten(playersMove.PlayersColor))
             {
@@ -98,9 +99,9 @@ namespace Backgammon.Services.Game.Domain.Models
                 }
                 else
                     if (Cells[AbsoluteDestanationCell].NumOfPieces == 1)//if eatsPlayer
-                    return 1;
-                else //there more then two pieces of enemy
-                    return -1;
+                        return 1;
+                    else //there more then two pieces of enemy
+                        return -1;
             }
             else //if the player is trying toGetOutAPiece
             {
@@ -113,8 +114,6 @@ namespace Backgammon.Services.Game.Domain.Models
 
         public int IsDestinationCellGoodForPlayer(int destinationCell, Colors playersColor)//
         {
-
-
             if (Cells[destinationCell].Color == playersColor || Cells[destinationCell].Color == Colors.NoColor)
                 return 0;
             else
@@ -139,17 +138,26 @@ namespace Backgammon.Services.Game.Domain.Models
             if (playersColor == Colors.Player1)
                 for (int i = 1; i < 19; i++)
                 {
+                    Console.WriteLine($"{playersColor} in cell: {i}");
                     if (Cells[i].NumOfPieces != 0)
                         if (Cells[i].Color == playersColor)
+                        {
+                            Console.WriteLine($"cannot get out");
                             return false;
+                        }
                 }
             else
                 for (int i = 7; i < 25; i++)
                 {
+                    Console.WriteLine($"{playersColor} in cell: {i}");
                     if (Cells[i].NumOfPieces != 0)
                         if (Cells[i].Color == playersColor)
+                        {
+                            Console.WriteLine($"cannot get out");
                             return false;
+                        }
                 }
+            Console.WriteLine($"can get out");
             return true;
         }
 
@@ -276,11 +284,13 @@ namespace Backgammon.Services.Game.Domain.Models
                 {
                     foreach (var num in avalblePlays)
                     {
-                        if (CheckAvailbilty(new PlayersMove() { CellNumber = 0, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
+                        if (IsDestinationCellGoodForPlayer(num,PlayersColor) > -1)
                         {
+                            Console.WriteLine($"{PlayersColor}: Can get out from the dead with cube: {num}");
                             return true;
                         }
                     }
+                    Console.WriteLine($"{PlayersColor}: Can't get out from dead");
                     return false;
                 }
             }
@@ -289,11 +299,13 @@ namespace Backgammon.Services.Game.Domain.Models
             {
                 foreach (var num in avalblePlays)
                 {
-                    if (CheckAvailbilty(new PlayersMove() { CellNumber = 0, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
+                    if (IsDestinationCellGoodForPlayer(25-num, PlayersColor) > -1)
                     {
+                        Console.WriteLine($"{PlayersColor}: Can get out from the dead with cube: {num}");
                         return true;
                     }
                 }
+                Console.WriteLine($"{PlayersColor}: Can't get out from dead");
                 return false;
             }
 
@@ -302,18 +314,20 @@ namespace Backgammon.Services.Game.Domain.Models
             {
                 for (int i = 1; i < 25; i++)
                 {
-                    if (Cells[i].Color == PlayersColor)//אם בתא הזה יש חייל של אותו שחקן תבדוק אם הוא יכול לזוז
+                    if (Cells[i].Color == PlayersColor && Cells[i].NumOfPieces > 0)//אם בתא הזה יש חייל של אותו שחקן תבדוק אם הוא יכול לזוז
                     {
                         if (PlayersColor == Colors.Player1)
                         {
                             if (CheckAvailbilty(new PlayersMove() { CellNumber = i, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
                             {
+                                Console.WriteLine($"{PlayersColor}: Can make a move with cube: {num} from cell: {i}");
                                 return true;
                             }
                         }else
                         {
                             if (CheckAvailbilty(new PlayersMove() { CellNumber =25-i, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
                             {
+                                Console.WriteLine($"{PlayersColor}: Can make a move with cube: {num} from cell: {i}");
                                 return true;
                             }
                         }
@@ -321,6 +335,7 @@ namespace Backgammon.Services.Game.Domain.Models
                         
                 }
             }
+            Console.WriteLine($"{PlayersColor}: Can't make any move");
             return false;
         }
 

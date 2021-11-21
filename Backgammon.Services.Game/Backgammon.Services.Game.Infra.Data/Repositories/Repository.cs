@@ -43,7 +43,7 @@ namespace Backgammon.Services.Game.Infra.Repositories
             _dataContext.Entry(winnerPlayer).Collection(p => p.GamesHistory);
             winnerPlayer.GamesHistory.Add(winnerResult);
 
-            PlayerDto losserPlayer = _dataContext.Players.Find(winnerPlayer);
+            PlayerDto losserPlayer = _dataContext.Players.Find(looserResult.PlayerDtoID);
             _dataContext.Entry(losserPlayer).Collection(p => p.GamesHistory);
             losserPlayer.GamesHistory.Add(looserResult);
         }

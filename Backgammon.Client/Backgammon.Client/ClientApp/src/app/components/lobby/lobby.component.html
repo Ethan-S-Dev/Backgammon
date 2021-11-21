@@ -8,7 +8,7 @@
         <ul>
             <li *ngFor="let chatter of connected(chatters)" class="online-user user" [ngStyle]="{'color':'green'}">
                 {{chatter.name}}
-                <div><button (click)="openChat(chatter)">Chat</button><button (click)="inviteToGame(chatter.id)">Invite</button></div>
+                <div><button (click)="openChat(chatter)">Chat</button><button (click)="inviteToGame(chatter.id)" [disabled]="isPlaying">Invite</button></div>
             </li>
         </ul>
         <ul>

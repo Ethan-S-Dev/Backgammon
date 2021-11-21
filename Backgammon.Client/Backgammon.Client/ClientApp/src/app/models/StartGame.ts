@@ -5,5 +5,6 @@ export interface StartGame{
     playerColor:string,
     isStarting:boolean,
     whoIsFirstRoll:TwoNums,
-    firstRoll:TwoNums
+    firstRoll:TwoNums,
+    opponentName:string
 }

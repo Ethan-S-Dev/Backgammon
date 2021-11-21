@@ -65,16 +65,35 @@ export class LobbyComponent implements OnInit {
       this.isPlaying = true;
       let isPlayerOne = firstMove.playerOne == this.currentId;
 
+      let opponentNam = (isPlayerOne ? this.getChatterName(firstMove.playerTwo) : this.getChatterName(firstMove.playerOne)) ?? '';
+
       if(isPlayerOne)
         if(firstMove.whosFirstCubes.firstCube > firstMove.whosFirstCubes.secondCube)
-          this.game = {isStarting:true,playerColor:'white',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId};
+          this.game = {isStarting:true,playerColor:'white',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId,opponentName:opponentNam};
         else
-          this.game = {isStarting:false,playerColor:'white',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId};
+          this.game = {isStarting:false,playerColor:'white',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId,opponentName:opponentNam};
       else
         if(firstMove.whosFirstCubes.secondCube > firstMove.whosFirstCubes.firstCube)
-          this.game = {isStarting:true,playerColor:'black',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId};
+          this.game = {isStarting:true,playerColor:'black',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId,opponentName:opponentNam};
         else
-          this.game = {isStarting:false,playerColor:'black',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId};
+          this.game = {isStarting:false,playerColor:'black',firstRoll:firstMove.playingCubes,whoIsFirstRoll:firstMove.whosFirstCubes,gameId:firstMove.gameId,opponentName:opponentNam};
+    });
+
+    this.gameService.onGameResult
+    .subscribe((result)=>{
+      if(result){
+        this.isPlaying = false;
+        this.game = undefined;
+
+        let didYouWin = this.currentId == result.winnerId;
+        if(didYouWin)
+          alert("Congrats You Won The Game!");
+        else
+        {
+          let otherName = this.getChatterName(result.winnerId);
+          alert(`${otherName} Won The Game, You Lost :(`);
+        }
+      }
     });
   }
 
@@ -90,10 +109,17 @@ export class LobbyComponent implements OnInit {
   }
 
   async inviteToGame(chatterId:string){
+    if(this.isPlaying)
+      return;
     await this.gameService.sendGameRequest(chatterId);
   }
 
   openChat(currentChat:Chatter){
     this.currentChat = currentChat;
+  }
+
+  private getChatterName(id:string)
+  {
+    return this.chatters.find(c=>c.id == id)?.name;
   }
 }

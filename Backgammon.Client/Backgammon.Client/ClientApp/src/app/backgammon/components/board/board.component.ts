@@ -16,6 +16,7 @@ export class BoardComponent implements OnInit {
   readonly right_bottom = [19, 20, 21, 22, 23, 24];
 
   moveable: boolean[] = [];
+  playerTurn:boolean = false;
   moveableTo: boolean[] = [];
   blackPieces: number[] = [];
   whitePieces: number[] = [];
@@ -33,6 +34,7 @@ export class BoardComponent implements OnInit {
     this.boardService.observeMoveable.subscribe(m => this.moveable = m);
     this.boardService.observeMoveableTo.subscribe(m =>{ this.moveableTo = m;});
     this.boardService.observeDices.subscribe(d => this.dices = d);
+    this.boardService.observePlayerTurn.subscribe(t=>this.playerTurn = t);
   }
 
   allowDrop(ev: DragEvent,i:number) {

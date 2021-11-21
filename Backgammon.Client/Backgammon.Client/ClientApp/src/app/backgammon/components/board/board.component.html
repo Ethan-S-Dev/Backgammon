@@ -4,8 +4,7 @@
         <app-piece id="moveable-black" [isWhite]="false"></app-piece>
         <div class="board-graves">
             <app-stack id="stack-25" (dragStarted)="dragStarted($event)" (dragEnded)="dragEnded($event)" [isBottom]="true" [maxSize]="2" class="grave-stack" [blackPieces]="blackPieces[25]" [whitePieces]="whitePieces[25]" [stackNumber]="25" [isLastMoveable]="moveable[25]"></app-stack>
-            <app-stack id="stack-0" (dragStarted)="dragStarted($event)" (dragEnded)="dragEnded($event)" [maxSize]="2" class="grave-stack" [isLastMoveable]="blackPieces[0] > 0 || whitePieces[0] > 0" [blackPieces]="blackPieces[0]" [whitePieces]="whitePieces[0]" [stackNumber]="0"
-                [isLastMoveable]="moveable[0]"></app-stack>
+            <app-stack id="stack-0" (dragStarted)="dragStarted($event)" (dragEnded)="dragEnded($event)" [maxSize]="2" class="grave-stack" [isLastMoveable]="moveable[0]" [blackPieces]="blackPieces[0]" [whitePieces]="whitePieces[0]" [stackNumber]="0" [isLastMoveable]="moveable[0]"></app-stack>
         </div>
         <div class="player-house" (drop)="dropOut($event)" (dragover)="allowDropOut($event)"></div>
         <div class="top-line"></div>
@@ -41,5 +40,13 @@
         <div class="bottom-line"></div>
     </div>
 </div>
-<div class="enemy-box"></div>
-<div class="player-box"></div>
+<div class="enemy-box">
+    <div class="enemy-card card" [class.his-turn]="!playerTurn">
+        <h1>{{game?.opponentName??"test"}}</h1>
+    </div>
+</div>
+<div class="player-box">
+    <div class="player-card card" [class.his-turn]="playerTurn">
+        <h1>You</h1>
+    </div>
+</div>

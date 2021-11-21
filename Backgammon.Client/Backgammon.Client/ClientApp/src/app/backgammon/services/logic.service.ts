@@ -21,8 +21,8 @@ export class LogicService {
   getTwoNumsFromRolls(rolls:number[]):TwoNums{
     if(rolls.length > 2) return {firstCube:rolls[0],secondCube:rolls[0]};
     if(rolls.length == 2) return {firstCube:rolls[0],secondCube:rolls[1]};
-    if(rolls.length == 0) return {firstCube:0,secondCube:0};
-    return {firstCube:rolls[0],secondCube:0};
+    if(rolls.length == 1) return {firstCube:rolls[0],secondCube:0};
+    return {firstCube:0,secondCube:0}; 
   }
 
   getRemoveSteps(rolls:number[],from:number):number{

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, delay } from 'rxjs';
 import { LastMove } from 'src/app/contracts/LastMove';
 import { Move } from 'src/app/contracts/Move';
+import { TurnOver } from 'src/app/contracts/TurnOver';
 import { TwoNums } from 'src/app/models/TwoNums';
 import { GameService } from 'src/app/services/game/game.service';
 import { AnimateDicesService } from './animate-dices.service';
@@ -28,6 +29,7 @@ export class GameBoardService {
   observeBlackPieces:BehaviorSubject<number[]> = new BehaviorSubject<number[]>(this.blackPieces);
   observeMoveable:BehaviorSubject<boolean[]> = new BehaviorSubject<boolean[]>(this.playerMoveable);
   observeMoveableTo:BehaviorSubject<boolean[]> = new BehaviorSubject<boolean[]>(this.playerMoveableTo);
+  observePlayerTurn:BehaviorSubject<boolean>  = new BehaviorSubject<boolean>(this.isPlayerTurn);
   observeDices:BehaviorSubject<{dice1:number,dice2:number}> = new BehaviorSubject<{dice1:number,dice2:number}>(this.dices);
 
   constructor(private sound:SoundService,
@@ -61,6 +63,7 @@ export class GameBoardService {
   async initGame(playerColor:string,isStarting:boolean,whoIsFirstRoll:TwoNums,firstRoll:TwoNums,gameId:string){
     this.playerColor = playerColor;
     this.isPlayerTurn = isStarting;
+    this.observePlayerTurn.next(this.isPlayerTurn);
     this.gameId = gameId;
     this.initBoard();
 
@@ -140,14 +143,17 @@ export class GameBoardService {
     this.observeDices.next(this.dices);
   }
 
-  private async opponentLastMove(l:LastMove){
+  private async opponentLastMove(l:LastMove){ 
 
     if(l.opponentMove.numOfSteps != 0)
       await this.doOpponentMove(l.opponentMove);
+    else
+      console.log("Skipped enemy move.");
 
     await this.rollDices(l.yourDices.firstCube,l.yourDices.secondCube)
 
     this.isPlayerTurn = true;
+    this.observePlayerTurn.next(this.isPlayerTurn);
     this.rolls = this.logic.getAvailableRolls(l.yourDices);
     this.playerMoveable = this.getAvailableMovesFromLogic();
     this.observeMoveable.next(this.playerMoveable);
@@ -277,8 +283,15 @@ export class GameBoardService {
     return result;
   }
 
-  private async doTurnOver(nums:TwoNums){
+  private async doTurnOver(turnOver:TurnOver){
+
+    if(turnOver.skipped)
+      console.log("You have been skipped!");
+
+    this.rolls = [];
+    let nums = turnOver.newNums;
     this.isPlayerTurn = false;
+    this.observePlayerTurn.next(this.isPlayerTurn);
     this.setAllFalse(this.playerMoveable);
     this.setAllFalse(this.playerMoveableTo);
     this.updateMoveable();

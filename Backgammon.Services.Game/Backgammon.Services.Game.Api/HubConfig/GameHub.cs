@@ -166,7 +166,7 @@ namespace Backgammon.Services.Game.Api.HubConfig
             }
             if (!game.CurrentPlayes.HasMoreNumbers())
             {
-                await SwitchPlayers(game, CurrentPlayerConnection, OtherPlayerConnection, playersColor, playersMove);
+                await SwitchPlayers(game, CurrentPlayerConnection, OtherPlayerConnection, playersColor, playersMove,false);
             }
             else //If he didnt used all his Cubes
             {
@@ -176,20 +176,20 @@ namespace Backgammon.Services.Game.Api.HubConfig
                 }
                 else
                 {
-                    await SwitchPlayers(game, CurrentPlayerConnection, OtherPlayerConnection, playersColor,playersMove);
+                    await SwitchPlayers(game, CurrentPlayerConnection, OtherPlayerConnection, playersColor,playersMove,true);
                 }
             }
 
         }
 
-        private async Task SwitchPlayers(GamePlay game,string CurrentPlayerConnection,string OtherPlayerConnection,Colors playersColor,PlayersMove playersMove)
+        private async Task SwitchPlayers(GamePlay game,string CurrentPlayerConnection,string OtherPlayerConnection,Colors playersColor,PlayersMove playersMove,bool isSkipped)
         {
             var gameID = game.GameId;
             var newNums = _boardManager.RollCubes();
             
             game.switchPlayersTurnAndRollCubes(newNums);
 
-            await Clients.Client(CurrentPlayerConnection).SendAsync("TurnIsOver", newNums);
+            await Clients.Client(CurrentPlayerConnection).SendAsync("TurnIsOver", new TurnOver { NewNums = newNums, Skipped = isSkipped });
             if (playersColor == Colors.Player1)
                 await Clients.Client(OtherPlayerConnection).SendAsync("LastMoveOfOpponent", new LastMove() { OpponentMove = new Move { GameId = gameID, NumOfSteps = -playersMove.NumOfSteps, StackNumber = 25 - playersMove.CellNumber }, YourDices = newNums });
             else
@@ -199,8 +199,8 @@ namespace Backgammon.Services.Game.Api.HubConfig
 
             if (!game.IsThereMoreMovements(playerNow))
             {
-                await Task.Delay(5000);
-                await SwitchPlayers(game, OtherPlayerConnection, CurrentPlayerConnection, playerNow, new PlayersMove { CellNumber = 0, NumOfSteps = 0, PlayersColor = playersColor });
+                await Task.Delay(3000);
+                await SwitchPlayers(game, OtherPlayerConnection, CurrentPlayerConnection, playerNow, new PlayersMove { CellNumber = 0, NumOfSteps = 0, PlayersColor = playersColor },true);
             }
         }
 
