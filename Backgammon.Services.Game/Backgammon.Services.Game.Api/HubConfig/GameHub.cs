@@ -57,9 +57,7 @@ namespace Backgammon.Services.Game.Api.HubConfig
                 if (_boardManager.IsConnectionExistsInGame(gameID, Context.ConnectionId))
                 {
                     string otherConnectionPlayerID = _boardManager.OnlineGames[gameID].GetOthersPlayerConnection(playerID);
-                    var otherPlayerID = _boardManager.OnlineGames[gameID].GetOtherPlayersID(playerID);
-                    _playerService.Players[otherPlayerID].GameId = "e";
-                    _boardManager.OnlineGames.Remove(gameID);
+                    RemoveFromGame(gameID, playerID);
                     await Clients.Client(otherConnectionPlayerID).SendAsync("GameError", GameErrors.OponentDisconnected);
                 }
             }
@@ -226,6 +224,22 @@ namespace Backgammon.Services.Game.Api.HubConfig
         public async Task Ping()
         {
             await Clients.Caller.SendAsync("Pong");
+        }
+
+        private void RemoveFromGame(string gameId,string playerId)
+        {
+            var otherPlayerId = _boardManager.OnlineGames[gameId].GetOtherPlayersID(playerId);
+            _boardManager.OnlineGames.Remove(gameId);
+
+            if(_playerService.Players.TryGetValue(playerId,out var player))
+            {
+                player.GameId = "e";
+            }
+
+            if (_playerService.Players.TryGetValue(otherPlayerId, out var player2))
+            {
+                player2.GameId = "e";
+            }
         }
     }
 }

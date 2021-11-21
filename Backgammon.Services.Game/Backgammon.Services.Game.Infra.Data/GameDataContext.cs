@@ -15,18 +15,9 @@ namespace Backgammon.Services.Game.Infra
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            modelBuilder.Entity<PlayerDto>().HasData(
-             new PlayerDto() { ID = "Hey", UserName = "svfvfv" },
-             new PlayerDto() { ID = "Whats", UserName = "svxz" },
-             new PlayerDto() { ID = "Up", UserName = "rskgmkr" }
-             );
-
-            modelBuilder.Entity<GameResultToHistory>().HasData(
-          new GameResultToHistory() { ID = "fdssW", PlayerDtoID = "Hey", ComponentsID = "Up", HasWon = true },
-          new GameResultToHistory() { ID = "fdssL", PlayerDtoID = "Up", ComponentsID = "Hey", HasWon = false }
-          );
-
+            modelBuilder.Entity<PlayerDto>().HasMany(p => p.GamesHistory)
+                .WithOne()
+                .HasForeignKey(h => h.PlayerDtoID);
         }
     }
 }

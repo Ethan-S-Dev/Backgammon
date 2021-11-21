@@ -111,7 +111,9 @@ namespace Backgammon.Services.Game.App.Services
             Players.TryGetValue(playerID, out Player player);
             int wins = player.GameHistory.Where(g => g.HasWon == true).Count();
             int losses = player.GameHistory.Where(g => g.HasWon == false).Count();
-            return wins / (wins + losses) * 100;
+            if (wins == 0)
+                return 0;
+            return (wins / (wins + losses)) * 100;
         }
 
         private int GetPlayersTotalPlayes(string playerID)

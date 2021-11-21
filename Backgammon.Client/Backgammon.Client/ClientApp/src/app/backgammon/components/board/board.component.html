@@ -40,17 +40,17 @@
         <div class="bottom-line"></div>
     </div>
 </div>
-<div class="enemy-box" (click) = "showStats()">
+<div class="enemy-box">
     <div class="enemy-card card" [class.his-turn]="!playerTurn">
-        <h2>{{game?.opponent.name ??"test"}}</h2>
-        <h3>game played: {{opponentStats.gamePlayed}}</h3>
-        <h3>win precentage: {{opponentStats.winPrecentage}}</h3>
+        <h2>{{game?.opponent?.name ??"test"}}</h2>
+        <h3>game played: {{opponentStats?.gamePlayed}}</h3>
+        <h3>win percentage: {{opponentStats?.winPrecentage}}</h3>
     </div>
 </div>
 <div class="player-box">
     <div class="player-card card" [class.his-turn]="playerTurn">
         <h2>You</h2>
-        <h3>game played: {{playerStats.gamePlayed}}</h3>
-        <h3>win precentage: {{playerStats.winPrecentage}}</h3>
+        <h3>game played: {{playerStats?.gamePlayed}}</h3>
+        <h3>win percentage: {{playerStats?.winPrecentage}}</h3>
     </div>
 </div>

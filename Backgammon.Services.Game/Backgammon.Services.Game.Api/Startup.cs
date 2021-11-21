@@ -102,7 +102,7 @@ namespace Backgammon.Services.Game.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, GameDataContext gamesContext)
         {
             //DbConfiguration
-            gamesContext.Database.EnsureDeleted();
+            //gamesContext.Database.EnsureDeleted();
             gamesContext.Database.EnsureCreated();
 
             app.UseCors("AllowAllHeaders");

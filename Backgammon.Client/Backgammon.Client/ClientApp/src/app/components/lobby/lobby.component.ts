@@ -116,6 +116,11 @@ export class LobbyComponent implements OnInit {
           }
         }
       });
+
+    this.gameService.onGameError.subscribe((err)=>{
+      this.game = undefined;
+      this.isPlaying = false;
+    })
   }
 
   routeToSettings() {

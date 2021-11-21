@@ -31,6 +31,7 @@ namespace Backgammon.Services.Game.Api.Controllers
             return nums.ToString();
         }
 
+        [HttpGet("Stats/{playerId}")]
         public IActionResult GetPlayersStats(string playerId)
         {
             if (string.IsNullOrEmpty(playerId))
