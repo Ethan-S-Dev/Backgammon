@@ -23,6 +23,8 @@ export class LobbyComponent implements OnInit {
   chatters: Chatter[] = [];
   isPlaying: boolean = false;
   game: StartGame | undefined;
+  howToOpen = false;
+  infoOpen = false;
   connected: (all: Chatter[]) => Chatter[] = (all) => all.filter(c => c.isConnected);
   disconnected: (all: Chatter[]) => Chatter[] = (all) => all.filter(c => !c.isConnected);
 
@@ -149,6 +151,24 @@ export class LobbyComponent implements OnInit {
   }
   private getChatter(id: string) {
     return this.chatters.find(c => c.id == id);
+  }
+
+  openHowTo(){
+    this.infoOpen = false;
+    this.howToOpen = !this.howToOpen;
+  }
+
+  closeHowTo(){
+    this.howToOpen = false;
+  }
+
+  openInfo(){
+    this.howToOpen = false;
+    this.infoOpen = !this.infoOpen;
+  }
+
+  closeInfo(){
+    this.infoOpen = false;
   }
 
 }

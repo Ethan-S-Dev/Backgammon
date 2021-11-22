@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backgammon.Services.Game.Do
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backgammon.Services.Game.App", "Backgammon.Services.Game.App\Backgammon.Services.Game.App.csproj", "{1CE013F2-D70F-4E75-92A3-27A2B6212B4C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backgammon.Services.Game.Infra", "Backgammon.Services.Game.Infra.Data\Backgammon.Services.Game.Infra.csproj", "{200CEA13-8109-49F6-A406-610CA47604A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backgammon.Services.Game.Infra", "Backgammon.Services.Game.Infra\Backgammon.Services.Game.Infra.csproj", "{200CEA13-8109-49F6-A406-610CA47604A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

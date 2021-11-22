@@ -19,6 +19,7 @@ export class BoardComponent implements OnInit {
 
   moveable: boolean[] = [];
   playerTurn:boolean = false;
+  firstRoll:boolean = false;
   moveableTo: boolean[] = [];
   blackPieces: number[] = [];
   whitePieces: number[] = [];
@@ -34,6 +35,7 @@ export class BoardComponent implements OnInit {
   ngOnInit(): void {
     if(!this.game)
     return ;
+    this.boardService.observeIfFirstRoll.subscribe(r=>this.firstRoll = r);
     this.boardService.initGame(this.game.playerColor,this.game.isStarting,this.game.whoIsFirstRoll,this.game.firstRoll,this.game.gameId);
     this.boardService.observeBlackPieces.subscribe(p => this.blackPieces = p);
     this.boardService.observeWhitePieces.subscribe(p => this.whitePieces = p);

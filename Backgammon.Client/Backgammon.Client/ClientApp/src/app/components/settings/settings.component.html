@@ -1,7 +1,8 @@
 <h2>{{currentUser}}</h2>
-
+<div>
+    <button (click)="routeToLobby()">Lobby</button>
+</div>
 <div class="header center">Change Name</div>
-
 <form [formGroup]="changeNameForm" (ngSubmit)="change()">
 
     <div>
@@ -13,7 +14,3 @@
     </div>
 
 </form>
-
-<div>
-    <button (click)="routeToLobby()">Lobby</button>
-</div>

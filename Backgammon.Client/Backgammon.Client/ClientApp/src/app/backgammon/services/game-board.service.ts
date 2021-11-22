@@ -22,7 +22,7 @@ export class GameBoardService {
   private blackPieces = [0,2,0,0,0,0,5,0,3,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0];
   private playerMoveable = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
   private playerMoveableTo = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
-  private dices:{dice1:number,dice2:number} = {dice1:4,dice2:5};
+  private dices:{dice1:number,dice2:number} = {dice1:0,dice2:0};
   private rolls:number[] = [];
 
   observeWhitePieces:BehaviorSubject<number[]> = new BehaviorSubject<number[]>(this.whitePieces);
@@ -31,6 +31,7 @@ export class GameBoardService {
   observeMoveableTo:BehaviorSubject<boolean[]> = new BehaviorSubject<boolean[]>(this.playerMoveableTo);
   observePlayerTurn:BehaviorSubject<boolean>  = new BehaviorSubject<boolean>(this.isPlayerTurn);
   observeDices:BehaviorSubject<{dice1:number,dice2:number}> = new BehaviorSubject<{dice1:number,dice2:number}>(this.dices);
+  observeIfFirstRoll:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   constructor(private sound:SoundService,
     private animatePieces:AnimatePiecesService,
@@ -68,9 +69,14 @@ export class GameBoardService {
     this.gameId = gameId;
     this.initBoard();
 
+    await this.sleep(1000);
+
+    this.observeDices.next({dice1:1,dice2:5});
     await this.startRollAnimation(whoIsFirstRoll);
 
     await this.sleep(3000);
+
+    this.observeIfFirstRoll.next(false);
 
     await this.rollDices(firstRoll.firstCube,firstRoll.secondCube);
 
@@ -156,6 +162,8 @@ export class GameBoardService {
     this.isPlayerTurn = true;
     this.observePlayerTurn.next(this.isPlayerTurn);
     this.rolls = this.logic.getAvailableRolls(l.yourDices);
+    console.log(`We got dice1:${l.yourDices.firstCube} dice2:${l.yourDices.secondCube}`);
+    console.log(`we have ${this.rolls.toString()} rolls`)
     this.playerMoveable = this.getAvailableMovesFromLogic();
     this.observeMoveable.next(this.playerMoveable);
   }

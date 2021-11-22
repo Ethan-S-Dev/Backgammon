@@ -14,7 +14,7 @@ import { ChatService } from 'src/app/services/chat/chat.service';
 })
 export class ChatComponent implements OnInit {
 
-  private _chatWith?: Chatter;
+  @Input() _chatWith?: Chatter;
   @Input()
   set chatWith(val: Chatter) {
     this._chatWith = val;
@@ -25,7 +25,12 @@ export class ChatComponent implements OnInit {
             this.chatService.confirmMessage({ messageId: message.id, receivedAt: this.getNowUTC() });
         });
         this.messages = mess;
-      })
+      });
+  }
+  get chatWith(){
+    if(this._chatWith)
+      return this._chatWith;
+    return {id:'4',name:"test",isConnected:false}
   }
   @Input() currentUserId?: string;
   messages: Message[];
@@ -39,8 +44,8 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this._chatWith)
-      this.chatService.getHistory(this._chatWith.id)
+    if (this.chatWith)
+      this.chatService.getHistory(this.chatWith.id)
         .subscribe(mess => {
           mess.forEach(message => {
             if (!message.isReceived && message.recipientId === this.currentUserId)
@@ -69,19 +74,20 @@ export class ChatComponent implements OnInit {
   }
 
   sendMessage() {
-    if (!this._chatWith)
+    if (!this.chatWith)
       return;
-    if (!this._chatWith.isConnected)
+    if (!this.chatWith.isConnected)
       return;
     if (this.messageForm.controls['messageBody'].invalid)
       return;
     let body = this.messageForm.controls['messageBody'].value;
-    let message: SendMessage = { messageBody: body, recipientId: this._chatWith.id, SentAt: this.getNowUTC() };
+    let message: SendMessage = { messageBody: body, recipientId: this.chatWith.id, SentAt: this.getNowUTC() };
     this.chatService.sendMessage(message);
+    this.messageForm.controls['messageBody'].setValue(undefined);
   }
 
   private receiveMessage(message: Message) {
-    if (message.senderId === this._chatWith?.id) {
+    if (message.senderId === this.chatWith?.id) {
       this.chatService.confirmMessage({ messageId: message.id, receivedAt: this.getNowUTC() });
       this.messages = [...this.messages, message];
     }

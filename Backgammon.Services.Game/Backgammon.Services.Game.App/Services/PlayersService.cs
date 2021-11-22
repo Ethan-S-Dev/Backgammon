@@ -58,11 +58,13 @@ namespace Backgammon.Services.Game.App.Services
         public bool IfInGameGetGameID(string playerId, out string GameId)
         {
             if (Players.TryGetValue(playerId, out Player player))
+            {
                 if (player.InGame)
                 {
                     GameId = player.GameId;
                     return true;
                 }
+            }
             GameId = "e";
             return false;
         }

@@ -69,13 +69,16 @@ export class LogicService {
 
   moveableTo(nums : TwoNums,  currentCell : number , cellsWithMyPieces: number[], cellsWithOpPieces: number[]):boolean[]{ //if player is eaten must give back 0 in current cell
     //making a commonCellsArray
+    console.log(`dice 1:${nums.firstCube} | dice 2:${nums.secondCube}`);
     let cells:Cell[] = this.margeCells(cellsWithMyPieces,cellsWithOpPieces);
-
     // let availableNums : TwoNums;
     // if(cells[0].numOfPieces != 0)
     //   currentCell = 0;
     let moves = this.moveableToCheck(nums,cells,currentCell);
-    return this.getMoveableTo(moves,currentCell);
+    console.log(`move 1:${moves.firstCube} | move 2:${moves.secondCube}`);
+    let movable = this.getMoveableTo(moves,currentCell);
+    console.log(movable);
+    return movable;
   }
 
   getAvailableRolls(nums:TwoNums):number[]{
@@ -89,7 +92,8 @@ export class LogicService {
 
   removeRolls(rolls:number[],num:number):number[]{
     let removed = false;
-    return rolls.filter(n=>{
+    console.log(`we had  = ${rolls} cubes and we used ${num}`);
+    let res = rolls.filter(n=>{
       if(removed)
         return true;
 
@@ -100,6 +104,8 @@ export class LogicService {
       }
       return true;
     });
+    console.log(`now we have = ${res} rolls`);
+    return res;
   }
 
   private moveableToCheck(nums:TwoNums,cells:Cell[],currentCell:number):TwoNums{
@@ -182,12 +188,11 @@ export class LogicService {
     if(!this.isAllPiecesAtTheEnd(cells))
     return false;
     if(numOfSteps + currentLocation == 25)
-    return true;
+      return true;
    
     for (let i = 19; i < currentLocation; i++) {
       if(cells[i].isMyPiece)
         return false;
-      
     }
     return true;
   }

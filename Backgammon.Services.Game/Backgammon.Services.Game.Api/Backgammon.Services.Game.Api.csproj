@@ -12,7 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Backgammon.Services.Game.App\Backgammon.Services.Game.App.csproj" />
     <ProjectReference Include="..\Backgammon.Services.Game.Domain\Backgammon.Services.Game.Domain.csproj" />
-    <ProjectReference Include="..\Backgammon.Services.Game.Infra.Data\Backgammon.Services.Game.Infra.csproj" />
+    <ProjectReference Include="..\Backgammon.Services.Game.Infra\Backgammon.Services.Game.Infra.csproj" />
   </ItemGroup>
 
 </Project>

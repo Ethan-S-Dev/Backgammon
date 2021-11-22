@@ -22,6 +22,7 @@ namespace Backgammon.Services.Game.Api
     public class Startup
     {
         IConfiguration _configuration;
+        IWebHostEnvironment _env;
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -36,6 +37,7 @@ namespace Backgammon.Services.Game.Api
             services.AddScoped<IPlayerService, PlayersService>();
             services.AddScoped<IRepository, Repository>();
             services.AddControllers();
+
             string conncetionString = _configuration.GetConnectionString("Def");
             services.AddDbContext<GameDataContext>(options => options.UseSqlServer(conncetionString));
 
