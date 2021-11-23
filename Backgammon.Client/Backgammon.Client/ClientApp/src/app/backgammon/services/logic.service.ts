@@ -91,7 +91,6 @@ export class LogicService {
     let moves = this.moveableToCheck(nums,cells,currentCell);
 
     let movable = this.getMoveableTo(moves,currentCell);
-    console.log(movable);
     return movable;
   }
 

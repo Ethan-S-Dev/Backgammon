@@ -81,7 +81,6 @@ export class BoardComponent implements OnInit {
   }
 
   dragStarted(from:number){
-    console.log('Drag triggered!')
     this.boardService.dragStarted(from);
   }
 

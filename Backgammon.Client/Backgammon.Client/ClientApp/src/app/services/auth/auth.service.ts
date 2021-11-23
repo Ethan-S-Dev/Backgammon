@@ -28,7 +28,8 @@ export class AuthService {
         tap((tokens: Tokens) => this.doLoginUser(tokens, keepLoggedIn)),
         mapTo(true),
         catchError(error => {
-          console.log(error);
+          let messages = error.error.errors.join('/n');
+          alert(messages);
           return of(false);
         }));
   }
@@ -39,7 +40,8 @@ export class AuthService {
       tap((tokens:Tokens)=>this.doLoginUser(tokens,keepLoggedIn)),
       mapTo(true),
       catchError(error=>{
-        console.log(error);
+        let messages = error.error.errors.join('/n');
+        alert(messages);
         return of(false);
       }));
   }
