@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, delay } from 'rxjs';
+import { BehaviorSubject, delay, from } from 'rxjs';
 import { LastMove } from 'src/app/contracts/LastMove';
 import { Move } from 'src/app/contracts/Move';
 import { TurnOver } from 'src/app/contracts/TurnOver';
@@ -123,7 +123,8 @@ export class GameBoardService {
       return;
     if(this.playerColor == 'white')
     {
-      this.playerMoveableTo = this.logic.moveableTo(this.logic.getTwoNumsFromRolls(this.rolls),
+      let twoNums = this.logic.getTwoNumsFromRolls(this.rolls);
+      this.playerMoveableTo = this.logic.moveableTo(twoNums,
         startedFrom,
         this.whitePieces,
         this.blackPieces);
@@ -162,8 +163,6 @@ export class GameBoardService {
     this.isPlayerTurn = true;
     this.observePlayerTurn.next(this.isPlayerTurn);
     this.rolls = this.logic.getAvailableRolls(l.yourDices);
-    console.log(`We got dice1:${l.yourDices.firstCube} dice2:${l.yourDices.secondCube}`);
-    console.log(`we have ${this.rolls.toString()} rolls`)
     this.playerMoveable = this.getAvailableMovesFromLogic();
     this.observeMoveable.next(this.playerMoveable);
   }
@@ -171,19 +170,21 @@ export class GameBoardService {
   async playerMove(from:number,to:number){
     //if ok to move!
     let numOfSteps = to-from;
-    
+
+    this.setAllFalse(this.playerMoveable);
+    this.observeMoveable.next(this.playerMoveable);
+
     if(this.logic.isAte(this.playerColor == 'white'?this.blackPieces:this.whitePieces,to))
     {
       await this.doMove(to,25,this.playerColor == 'white'?'black':'white');
     }
     
     await this.doMove(from,to,this.playerColor);
-    
-    
+
     this.rolls = this.logic.removeRolls(this.rolls,numOfSteps);
     this.playerMoveable = this.getAvailableMovesFromLogic();
     this.observeMoveable.next(this.playerMoveable);
-
+    
     await this.gameService.sendMove({gameId:this.gameId,stackNumber:from,numOfSteps:numOfSteps});
   }
 

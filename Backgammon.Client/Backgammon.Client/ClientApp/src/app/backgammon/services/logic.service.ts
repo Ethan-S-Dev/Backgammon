@@ -51,7 +51,7 @@ export class LogicService {
           if(i != 0)
             return false;
 
-          return true;
+          return this.canGetOut(nums,cellsWithOpPieces);
       }
       else
       {
@@ -67,15 +67,29 @@ export class LogicService {
     return ret;
   }
 
+  private canGetOut(nums:TwoNums,cellsWithOpPieces:number[]):boolean
+  {
+    if(nums.firstCube != 0)
+    {
+      if(cellsWithOpPieces[nums.firstCube] < 2)
+        return true;
+    }
+
+    if(nums.secondCube != 0)
+    {
+      if(cellsWithOpPieces[nums.secondCube] < 2)
+        return true;
+    }
+
+    return false;
+  }
+
   moveableTo(nums : TwoNums,  currentCell : number , cellsWithMyPieces: number[], cellsWithOpPieces: number[]):boolean[]{ //if player is eaten must give back 0 in current cell
     //making a commonCellsArray
-    console.log(`dice 1:${nums.firstCube} | dice 2:${nums.secondCube}`);
     let cells:Cell[] = this.margeCells(cellsWithMyPieces,cellsWithOpPieces);
-    // let availableNums : TwoNums;
-    // if(cells[0].numOfPieces != 0)
-    //   currentCell = 0;
+
     let moves = this.moveableToCheck(nums,cells,currentCell);
-    console.log(`move 1:${moves.firstCube} | move 2:${moves.secondCube}`);
+
     let movable = this.getMoveableTo(moves,currentCell);
     console.log(movable);
     return movable;
@@ -92,7 +106,6 @@ export class LogicService {
 
   removeRolls(rolls:number[],num:number):number[]{
     let removed = false;
-    console.log(`we had  = ${rolls} cubes and we used ${num}`);
     let res = rolls.filter(n=>{
       if(removed)
         return true;
@@ -104,7 +117,6 @@ export class LogicService {
       }
       return true;
     });
-    console.log(`now we have = ${res} rolls`);
     return res;
   }
 

@@ -59,7 +59,6 @@ export class BoardComponent implements OnInit {
     this.boardService.dragStopped();
     let fromStack = ev.dataTransfer?.getData("fromStack");
     let pieceColor = ev.dataTransfer?.getData("color");
-    console.log(`Drop ${pieceColor} piece from ${fromStack} to ${toStack}`)
     if (fromStack && pieceColor) {
       let from = new Number(fromStack) as number;
       await this.boardService.playerMove(from, toStack);
@@ -82,6 +81,7 @@ export class BoardComponent implements OnInit {
   }
 
   dragStarted(from:number){
+    console.log('Drag triggered!')
     this.boardService.dragStarted(from);
   }
 
