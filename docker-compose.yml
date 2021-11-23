@@ -20,12 +20,27 @@ services:
     build:
       context: ./Backgammon.Services.Chat
       dockerfile: ./Dockerfile
-    container_name: backgammon
+    container_name: chat
     restart: always
     environment:
       ASPNETCORE_ENVIRONMENT: Docker
     ports:
       - "5050:80"
+    depends_on: 
+      - mssql
+    networks:
+      - backgammon_network
+
+  game:
+    build:
+      context: ./Backgammon.Services.Game
+      dockerfile: ./Dockerfile
+    container_name: game
+    restart: always
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+    ports:
+      - "6060:80"
     depends_on: 
       - mssql
     networks:

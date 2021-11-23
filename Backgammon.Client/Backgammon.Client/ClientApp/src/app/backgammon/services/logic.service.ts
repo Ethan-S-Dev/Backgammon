@@ -51,7 +51,7 @@ export class LogicService {
           if(i != 0)
             return false;
 
-          return true;
+          return this.canGetOut(nums,cellsWithOpPieces);
       }
       else
       {
@@ -67,15 +67,32 @@ export class LogicService {
     return ret;
   }
 
+  private canGetOut(nums:TwoNums,cellsWithOpPieces:number[]):boolean
+  {
+    if(nums.firstCube != 0)
+    {
+      if(cellsWithOpPieces[nums.firstCube] < 2)
+        return true;
+    }
+
+    if(nums.secondCube != 0)
+    {
+      if(cellsWithOpPieces[nums.secondCube] < 2)
+        return true;
+    }
+
+    return false;
+  }
+
   moveableTo(nums : TwoNums,  currentCell : number , cellsWithMyPieces: number[], cellsWithOpPieces: number[]):boolean[]{ //if player is eaten must give back 0 in current cell
     //making a commonCellsArray
     let cells:Cell[] = this.margeCells(cellsWithMyPieces,cellsWithOpPieces);
 
-    // let availableNums : TwoNums;
-    // if(cells[0].numOfPieces != 0)
-    //   currentCell = 0;
     let moves = this.moveableToCheck(nums,cells,currentCell);
-    return this.getMoveableTo(moves,currentCell);
+
+    let movable = this.getMoveableTo(moves,currentCell);
+    console.log(movable);
+    return movable;
   }
 
   getAvailableRolls(nums:TwoNums):number[]{
@@ -89,7 +106,7 @@ export class LogicService {
 
   removeRolls(rolls:number[],num:number):number[]{
     let removed = false;
-    return rolls.filter(n=>{
+    let res = rolls.filter(n=>{
       if(removed)
         return true;
 
@@ -100,6 +117,7 @@ export class LogicService {
       }
       return true;
     });
+    return res;
   }
 
   private moveableToCheck(nums:TwoNums,cells:Cell[],currentCell:number):TwoNums{
@@ -182,12 +200,11 @@ export class LogicService {
     if(!this.isAllPiecesAtTheEnd(cells))
     return false;
     if(numOfSteps + currentLocation == 25)
-    return true;
+      return true;
    
     for (let i = 19; i < currentLocation; i++) {
       if(cells[i].isMyPiece)
         return false;
-      
     }
     return true;
   }

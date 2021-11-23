@@ -7,7 +7,7 @@ namespace Backgammon.Services.Game.Infra.DbModels
     {
         public string ID { get; set; }
         public string UserName { get; set; }
-        public List<GameResultToHistory> GamesHistory { get; set; }
+        public ICollection<GameResultToHistory> GamesHistory { get; set; }
 
         public PlayerDto() { }
 

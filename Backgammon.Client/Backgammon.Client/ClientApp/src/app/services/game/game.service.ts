@@ -73,7 +73,7 @@ export class GameService {
   }
 
   public getPlayerStats(playerId:string){
-    return this.http.get<PlayerStats>(`${this.API.game}/GetPlayersStats/?${playerId}`)
+    return this.http.get<PlayerStats>(`${this.API.game}/Stats/${playerId}`)
   }
   public closeConnection(){
     this.connection?.stop()
@@ -164,18 +164,21 @@ export class GameService {
         break;
       case 3:
         alert("Opponent in game");
-        // TODO
+        this.onInvitationError.next({message:"Opponent in game"});
         break;
       case 4:
         alert("Sender unavailable");
+        this.onInvitationError.next({message:"Sender unavailable"});
         // TODO
         break;
       case 5:
         alert("Illegal move");
+        this.onGameError.next({message:"Illegal move"})
         // TODO
         break;
         case 6:
           alert("Player use cheats");
+          this.onGameError.next({message:"Player use cheats"});
         // TODO
         break;
       default:

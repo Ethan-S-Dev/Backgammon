@@ -168,7 +168,7 @@ namespace Backgammon.Services.Game.Domain.Models
                 if (playersMove.PlayersColor == Colors.Player1)
                     for (int i = 19; i < playersMove.CellNumber; i++)
                     {
-                        if (Cells[i].NumOfPieces > 0)
+                        if (Cells[i].NumOfPieces > 0 && Cells[i].Color == playersMove.PlayersColor)
                         {
 
                             //if (-1 < CheckAvailbilty(new PlayersMove { CellNumber = i,NumOfSteps = playersMove.NumOfSteps,PlayersColor = playersMove.PlayersColor}))
@@ -180,7 +180,7 @@ namespace Backgammon.Services.Game.Domain.Models
                 else
                     for (int i = 6; i > playersMove.CellNumber; i--)
                     {
-                        if (Cells[i].NumOfPieces > 0)
+                        if (Cells[i].NumOfPieces > 0 && Cells[i].Color == playersMove.PlayersColor)
                         {
                             
                             //if (-1 < CheckAvailbilty(new PlayersMove { CellNumber = 25 - i, NumOfSteps = -playersMove.NumOfSteps, PlayersColor = playersMove.PlayersColor }))
@@ -211,7 +211,7 @@ namespace Backgammon.Services.Game.Domain.Models
                     Cells[0].NumOfPieces--;
                 else
                     Cells[25].NumOfPieces--;
-                Cells[AbsolueDestination].NumOfPieces = 1;
+                Cells[AbsolueDestination].NumOfPieces++;
                 Cells[AbsolueDestination].Color = playersMove.PlayersColor;
                 return false;
             }
@@ -270,7 +270,8 @@ namespace Backgammon.Services.Game.Domain.Models
         public bool IsThereMoreMovements(Colors PlayersColor)//return false if there are no more possible moves
         {
             List<int> avalblePlays = CurrentPlayes.GetAvalableNumbers().ToList();
-
+            var ind = 0;
+            Console.WriteLine(string.Join(" | ", Cells.Select(c => $"{ind++}-{c.Color}:{c.NumOfPieces}")));
 
             // If eaten
             if (PlayersColor == Colors.Player1)
@@ -340,108 +341,4 @@ namespace Backgammon.Services.Game.Domain.Models
         public string GetOtherPlayersID(string CurrentPlayersID) => CurrentPlayersID == FirstPlayerID ? SecondPlayerID : FirstPlayerID;
 
     }
-
-    //public MakingMoveResult MakingTheMove(PlayersTurn playersTurn)
-    //{
-    //    if (playersTurn.PlayersID != CurrentPlayersTurn)
-    //        return new MakingMoveResult(new List<string>() { "Playing in the wrong Turn" });
-
-    //    if (!CheckIfMovesStepsEqualsTheCubes(playersTurn))
-    //        return new MakingMoveResult(new List<string>() { "Number of Steps Dont Match The Cubes" });
-
-
-
-
-    //}
-
-
-    ////public TwoNums CheckOptionsFromCell(TwoNums nums, Colors playersColor,int currentCell) //Returns The Available Cubes Moves For This 
-    ////{
-    ////    TwoNums avalibleNums = new();
-    ////    if(playersColor ==Colors.Player2)
-    ////    {
-    ////        nums.FirstCube = -nums.FirstCube;
-    ////        nums.SecondCube = -nums.SecondCube;
-    ////    }
-    ////    GameCell firstDestination = Cells[currentCell + nums.FirstCube];
-    ////    if (firstDestination.Color == Colors.NoColor || firstDestination.Color == playersColor)
-    ////    {
-    ////        avalibleNums.FirstCube = nums.FirstCube;
-    ////    }
-    ////    GameCell secondDestination = Cells[currentCell + nums.SecondCube];
-
-    ////    if (secondDestination.Color == Colors.NoColor || secondDestination.Color == playersColor)
-    ////        avalibleNums.SecondCube = nums.SecondCube;
-
-    ////    return avalibleNums;
-    ////}
-
-
-    ////public void MakeTheMove(PlayersMove playersMove, Colors playersColor)
-    ////{
-    ////    int destanationCell = playersMove.CellNumber + playersMove.NumOfSteps;
-    ////    if (CheckAvailbilty(playersMove, playersColor))
-    ////    {
-    ////        Cells[playersMove.CellNumber].NumOfPieces--;
-    ////        if (Cells[destanationCell].Color == playersColor)
-    ////        {
-    ////            Cells[destanationCell].NumOfPieces++;
-    ////        }
-    ////        else
-    ////        {
-    ////            Cells[destanationCell].Color = playersColor;
-    ////            if (playersColor == Colors.Player1)
-    ////                EatenPlayersTwoPieces++;
-    ////            else
-    ////                EatenPlayersOnePieces++;
-    ////        }
-    ////    }
-
-    ////}
-
-
-    ////public bool isEaten(Colors playerColor)
-    ////{
-    ////    if (playerColor == Colors.Player1)
-    ////    {
-    ////        if (EatenPlayersOnePieces > 0)
-    ////            return true;
-    ////    }
-    ////    else
-    ////    if (playerColor == Colors.Player2)
-    ////        if (EatenPlayersTwoPieces > 0)
-    ////            return true;
-    ////    return false;
-    ////}
-    ///
-
-    //public bool CheckIfMovesStepsEqualsTheCubes(PlayersTurn playersTurn) //checks if the Current cubes equals to the players moves
-    //{
-    //    if (playersTurn.Moves[0].NumOfSteps == playersTurn.Moves[1].NumOfSteps)//האם יצא דאבל
-    //    {
-    //        foreach (var move in playersTurn.Moves)
-    //            if (move.NumOfSteps != CurrentNums.FirstCube)
-    //                return false;
-    //    }
-    //    else
-    //    {
-    //        if (!(CurrentNums.FirstCube == playersTurn.Moves[0].NumOfSteps && CurrentNums.SecondCube == playersTurn.Moves[1].NumOfSteps))
-    //            return false;
-    //    }
-    //    return true;
-    //}
-
-
-    ////public bool isThereAnyMoveAvailable(int steps)
-    ////{
-
-    ////}
-
-
-    //public bool MovePiceses()
-    //{
-
-    //    return true;
-    //}
-
 }

@@ -15,8 +15,8 @@
                     [blackPieces]="blackPieces[i]" [isDroppable]="moveableTo[i]" (dragStarted)="dragStarted($event)" (dragEnded)="dragEnded($event)"></app-stack>
             </div>
             <div class="left-mid-box">
-                <app-dice id="dice1" *ngIf="dices" [number]="dices.dice1"></app-dice>
-                <app-dice id="dice2" *ngIf="dices" [number]="dices.dice2"></app-dice>
+                <app-dice id="dice1" *ngIf="dices" [number]="dices.dice1" [class.enemy-dice]="firstRoll && dices.dice1 != 0"></app-dice>
+                <app-dice id="dice2" *ngIf="dices" [number]="dices.dice2" [class.your-dice]="firstRoll && dices.dice1 != 0"></app-dice>
             </div>
             <div class="left-bottom-box">
                 <app-stack *ngFor="let i of left_bottom" id="stack-{{i}}" class="tri" [isLastMoveable]="moveable[i]" [ngClass]="{'red-tri':i%2==0,'black-tri':i%2!=0}" [stackNumber]="i" [isBottom]="true" (drop)="drop($event,i)" (dragover)="allowDrop($event,i)" [whitePieces]="whitePieces[i]"
@@ -40,17 +40,23 @@
         <div class="bottom-line"></div>
     </div>
 </div>
-<div class="enemy-box" (click) = "showStats()">
+<div class="enemy-box">
     <div class="enemy-card card" [class.his-turn]="!playerTurn">
-        <h2>{{game?.opponent.name ??"test"}}</h2>
-        <h3>game played: {{opponentStats.gamePlayed}}</h3>
-        <h3>win precentage: {{opponentStats.winPrecentage}}</h3>
+        <div>
+            {{game?.opponent?.name ??"test"}}
+        </div>
+        <div>
+            <div>Game played: {{opponentStats?.gamePlayed}}</div>
+            <div>Win percentage: {{opponentStats?.winPrecentage}}%</div>
+        </div>
     </div>
 </div>
 <div class="player-box">
     <div class="player-card card" [class.his-turn]="playerTurn">
-        <h2>You</h2>
-        <h3>game played: {{playerStats.gamePlayed}}</h3>
-        <h3>win precentage: {{playerStats.winPrecentage}}</h3>
+        <div>You</div>
+        <div>
+            <div>Game played: {{playerStats?.gamePlayed}}</div>
+            <div>Win percentage: {{playerStats?.winPrecentage}}%</div>
+        </div>
     </div>
 </div>

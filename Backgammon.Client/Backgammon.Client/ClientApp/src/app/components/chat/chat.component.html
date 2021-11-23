@@ -1,4 +1,4 @@
-<h2>{{chatWith?.name}}</h2>
+<div class="chat-with">{{chatWith?.name ?? 'test'}}</div>
 <div class="messages-container">
     <app-message *ngFor="let message of messages" [text]="message.messageBody" [isUser]="currentUserId===message.senderId" [sentAt]="message.sentAt"></app-message>
 </div>

@@ -50,13 +50,12 @@ namespace Backgammon.Services.Chat.Infra.Data.Repositorys
 
         public Task<IEnumerable<Chatter>> GetChatters()
         {
-            return Task.FromResult<IEnumerable<Chatter>>(context.Chatters.Select(c => new Chatter
-            {
-                Id = c.Id,
-                Name = c.Name,
-                IsConnected = c.IsConnected,
-                LastSeen = c.Connections.Max(c => c.EndedAt)
-            }).ToList());
+            return Task.FromResult<IEnumerable<Chatter>>(context.Chatters.Select(c =>new Chatter{
+                    Id = c.Id,
+                    Name = c.Name,
+                    IsConnected = c.IsConnected,
+                    LastSeen = c.Connections.Max(c => c.EndedAt)
+               }).ToList());
         }
 
         public async Task SetConnected(Guid cahatterId)
