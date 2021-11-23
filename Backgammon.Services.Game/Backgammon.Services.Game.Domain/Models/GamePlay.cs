@@ -138,26 +138,21 @@ namespace Backgammon.Services.Game.Domain.Models
             if (playersColor == Colors.Player1)
                 for (int i = 1; i < 19; i++)
                 {
-                    Console.WriteLine($"{playersColor} in cell: {i}");
                     if (Cells[i].NumOfPieces != 0)
                         if (Cells[i].Color == playersColor)
                         {
-                            Console.WriteLine($"cannot get out");
                             return false;
                         }
                 }
             else
                 for (int i = 7; i < 25; i++)
                 {
-                    Console.WriteLine($"{playersColor} in cell: {i}");
                     if (Cells[i].NumOfPieces != 0)
                         if (Cells[i].Color == playersColor)
                         {
-                            Console.WriteLine($"cannot get out");
                             return false;
                         }
                 }
-            Console.WriteLine($"can get out");
             return true;
         }
 
@@ -286,11 +281,9 @@ namespace Backgammon.Services.Game.Domain.Models
                     {
                         if (IsDestinationCellGoodForPlayer(num,PlayersColor) > -1)
                         {
-                            Console.WriteLine($"{PlayersColor}: Can get out from the dead with cube: {num}");
                             return true;
                         }
                     }
-                    Console.WriteLine($"{PlayersColor}: Can't get out from dead");
                     return false;
                 }
             }
@@ -301,11 +294,9 @@ namespace Backgammon.Services.Game.Domain.Models
                 {
                     if (IsDestinationCellGoodForPlayer(25-num, PlayersColor) > -1)
                     {
-                        Console.WriteLine($"{PlayersColor}: Can get out from the dead with cube: {num}");
                         return true;
                     }
                 }
-                Console.WriteLine($"{PlayersColor}: Can't get out from dead");
                 return false;
             }
 
@@ -320,14 +311,12 @@ namespace Backgammon.Services.Game.Domain.Models
                         {
                             if (CheckAvailbilty(new PlayersMove() { CellNumber = i, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
                             {
-                                Console.WriteLine($"{PlayersColor}: Can make a move with cube: {num} from cell: {i}");
                                 return true;
                             }
                         }else
                         {
                             if (CheckAvailbilty(new PlayersMove() { CellNumber =25-i, PlayersColor = PlayersColor, NumOfSteps = num }) > -1)
                             {
-                                Console.WriteLine($"{PlayersColor}: Can make a move with cube: {num} from cell: {i}");
                                 return true;
                             }
                         }
@@ -335,7 +324,6 @@ namespace Backgammon.Services.Game.Domain.Models
                         
                 }
             }
-            Console.WriteLine($"{PlayersColor}: Can't make any move");
             return false;
         }
 
