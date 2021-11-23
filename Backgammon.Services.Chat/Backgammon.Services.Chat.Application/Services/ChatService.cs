@@ -21,10 +21,14 @@ namespace Backgammon.Services.Chat.Application.Services
 
         public void CloseAllConnections() => connectionRepo.CloseAllConnections();
 
-        public async Task ConnectChatterAsync(Guid chatterId,string connectionId)
+        public async Task<bool> ConnectChatterAsync(Guid chatterId,string connectionId)
         {
             await connectionRepo.CreateConnection(connectionId, chatterId, DateTime.UtcNow);
+            var chatter = await chatterRepo.FindChatter(chatterId);
+            if (chatter.IsConnected)
+                return false;
             await chatterRepo.SetConnected(chatterId);
+            return true;
         }
 
         public async Task<bool> DisconnectChatterAsync(Guid chater, string connectionId)

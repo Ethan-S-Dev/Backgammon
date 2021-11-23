@@ -50,15 +50,15 @@ namespace Backgammon.Services.Identity.Infra.Ioc
 
         public static void AddSecrets(this IServiceCollection services)
         {
-            services.AddScoped<ICredentialsProvider,CredentialsProvider>();
-            services.AddScoped<IJsonWebTokenProvider, JwtProvider>();
+            services.AddSingleton<ICredentialsProvider,CredentialsProvider>();
+            services.AddSingleton<IJsonWebTokenProvider, JwtProvider>();
         }
 
         public static void AddSecrets(this IServiceCollection services,Action<ICredentialsProvider> signigAction)
         {
             var provider = new CredentialsProvider();
             services.AddSingleton<ICredentialsProvider>(provider);
-            services.AddScoped<IJsonWebTokenProvider, JwtProvider>();
+            services.AddSingleton<IJsonWebTokenProvider, JwtProvider>();
             signigAction?.Invoke(provider);
         }
     }

@@ -41,5 +41,4 @@ export class SettingsComponent implements OnInit {
   routeToLobby(){
     this.router.navigate(['/lobby']);
   }
-
 }

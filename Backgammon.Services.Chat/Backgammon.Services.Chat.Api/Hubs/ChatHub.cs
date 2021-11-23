@@ -34,13 +34,16 @@ namespace Backgammon.Services.Chat.Api.Hubs
             // Add user to connected list, 
             var chatter = await chatService.GetOrAddChatterAsync(chaterId,userName);
 
-            await chatService.ConnectChatterAsync(chatter.Id,Context.ConnectionId);
+            var isFirstConnect = await chatService.ConnectChatterAsync(chatter.Id, Context.ConnectionId);
 
             var chattersWithoutCaller = await chatService.GetChattersAsync(chaterId);
 
-            var chatterIds = chattersWithoutCaller.Select(c => c.Id.ToString()).ToList();
+            if (isFirstConnect)
+            {
+                var chatterIds = chattersWithoutCaller.Select(c => c.Id.ToString()).ToList();
 
-            await Clients.Users(chatterIds).SendAsync("ChatterConnected", chatter);
+                await Clients.Users(chatterIds).SendAsync("ChatterConnected", chatter);
+            }
 
             await Clients.Caller.SendAsync("SetChatters", chattersWithoutCaller);      
         }

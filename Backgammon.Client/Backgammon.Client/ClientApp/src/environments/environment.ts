@@ -6,10 +6,13 @@ export const environment : Env = {
   production: false,
   api:{
     identity:'http://localhost:5000/api',
-    chat:'http://localhost:5050/api'
+    chat:'http://localhost:5050/api',
+    game:'http://localhost:6060/api/game'
+
   },
   hubs:{
-    chat:"http://localhost:5050/hubs/chat"
+    chat:"http://localhost:5050/hubs/chat",
+    game:"http://localhost:6060/game"
   }
 };
 
@@ -22,11 +25,13 @@ export interface Env{
 
 export interface Api{
   identity:string,
-  chat:string
+  chat:string,
+  game:string
 }
 
 export interface Hubs{
-  chat:string
+  chat:string,
+  game:string
 }
 /*
  * For easier debugging in development mode, you can import the following file

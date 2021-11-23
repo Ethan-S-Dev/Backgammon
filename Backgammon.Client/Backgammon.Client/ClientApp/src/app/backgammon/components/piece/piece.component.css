@@ -10,11 +10,11 @@
 }
 
 .white {
-    background-image: url(../../assets/pice/w-piece.svg);
+    background-image: url(../../../../assets/pice/w-piece.svg);
 }
 
 .black {
-    background-image: url(../../assets/pice/b-piece.svg);
+    background-image: url(../../../../assets/pice/b-piece.svg);
 }
 
 .piece-overlay {
@@ -24,6 +24,11 @@
     background: linear-gradient(120deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), rgba(255, 255, 221, 0.99), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0));
     animation: glow 4s ease-out infinite;
     background-size: 200% 200%;
+    cursor: grab;
+}
+
+.piece-overlay:active {
+    cursor: grabbing;
 }
 
 @keyframes glow {

@@ -6,6 +6,7 @@ import { catchError, map, mapTo, tap } from 'rxjs/operators';
 import { Tokens } from 'src/app/models/Tokens';
 import { environment } from 'src/environments/environment';
 import { ChatService } from '../chat/chat.service';
+import { GameService } from '../game/game.service';
 
 @Injectable({
     providedIn: 'root'
@@ -17,8 +18,9 @@ export class AuthService {
   private readonly ACCESS_TOKEN = 'ACCESS_TOKEN';
   private readonly REFRESH_TOKEN = "REFRESH_TOKEN";
   private isChatServiceInit:boolean = false;
+  private isGameServiceInit:boolean = false;
 
-  constructor(private http: HttpClient,private chatService:ChatService,private router:Router) { }
+  constructor(private http: HttpClient,private chatService:ChatService,private gameService:GameService,private router:Router) { }
 
   login(user: { username: string, password: string }, keepLoggedIn: boolean): Observable<boolean> {
     return this.http.post<Tokens>(`${this.API.identity}/auth/login`, user)
@@ -159,10 +161,19 @@ export class AuthService {
       this.chatService.initConnection(()=>this.accessTokenFactory());
       this.isChatServiceInit = true;
     }
+
+    if(!this.isGameServiceInit)
+    {
+      this.gameService.initConnection(()=>this.accessTokenFactory());
+      this.isGameServiceInit = true;
+    }
   }
 
   private closeServices(){
     this.chatService.closeConnection();
     this.isChatServiceInit = false;
+
+    this.gameService.closeConnection;
+      this.isGameServiceInit = false;
   }
 }
