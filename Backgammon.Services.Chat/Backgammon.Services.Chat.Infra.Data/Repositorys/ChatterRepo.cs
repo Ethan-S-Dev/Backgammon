@@ -4,7 +4,6 @@ using Backgammon.Services.Chat.Infra.Data.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Backgammon.Services.Chat.Infra.Data.Repositorys
