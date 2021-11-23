@@ -1,6 +1,25 @@
 version: '3.5'
 
-services: 
+services:
+  client:
+    build:
+      context: ./Backgammon.Client
+      dockerfile: ./Dockerfile
+      args:
+        - skip_client_build=false
+    container_name: client
+    restart: always
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+    ports:
+      - "4200:80"
+    depends_on: 
+      - identity
+      - chat
+      - game
+    networks:
+      - backgammon_network
+
   identity:
     build:
       context: ./Backgammon.Services.Identity
@@ -55,8 +74,6 @@ services:
     environment:
       SA_PASSWORD: Pa55!W0rd
       ACCEPT_EULA: Y
-    ports: 
-      - 14033:1433
     networks:
       - backgammon_network
 

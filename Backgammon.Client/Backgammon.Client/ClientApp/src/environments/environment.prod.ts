@@ -1,5 +1,3 @@
-import { Env } from "./environment";
-
 export const environment : Env = {
   production: false,
   api:{
@@ -13,3 +11,21 @@ export const environment : Env = {
     game:"http://localhost:6060/game"
   }
 };
+
+export interface Env {
+  production: boolean,
+  api: Api,
+  hubs: Hubs
+}
+
+
+export interface Api {
+  identity: string,
+  chat: string,
+  game: string
+}
+
+export interface Hubs {
+  chat: string,
+  game: string
+}
