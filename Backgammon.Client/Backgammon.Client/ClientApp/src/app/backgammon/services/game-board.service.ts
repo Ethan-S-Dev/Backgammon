@@ -18,7 +18,7 @@ export class GameBoardService {
   private playerColor:string = 'none';
   private gameId:string = '';
 
-  private whitePieces = [0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,3,0,5,0,0,0,0,0,0];
+  private whitePieces = [0,0,0,0,0,0,5,0,0,0,0,0,5,0,0,0,0,3,0,5,0,0,0,0,0,0];
   private blackPieces = [0,2,0,0,0,0,5,0,3,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0];
   private playerMoveable = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
   private playerMoveableTo = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
@@ -253,7 +253,9 @@ export class GameBoardService {
       
         this.blackPieces[to] = this.blackPieces[to]+1;
         this.updateBlack();
-      }  
+      }
+
+      this.sound.playPieceMove();
   }
 
   private updateWhite(){
